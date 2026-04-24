@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: navya-cleaning-april
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 24.15.0
+      - key: NEXT_TELEMETRY_DISABLED
+        value: 1
