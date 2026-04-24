@@ -10,3 +10,9 @@ services:
         value: 24.15.0
       - key: NEXT_TELEMETRY_DISABLED
         value: 1
+      - key: DB_PATH
+        value: /var/lib/data/mythos.db
+    disk:
+      name: mythos-db
+      mountPath: /var/lib/data
+      sizeGB: 1

@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 
-const dbPath = path.resolve(process.cwd(), 'mythos.db');
+const dbPath = process.env.DB_PATH || path.resolve(process.cwd(), 'mythos.db');
 const db = new Database(dbPath);
 
 db.exec(`
