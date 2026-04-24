@@ -3,8 +3,13 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import { BentoGrid, BentoItem, FlashCard } from "@/components/InteractiveElements";
 import { DynamicQuoting } from "@/components/DynamicQuoting";
+import { CROEngine } from "@/lib/cro-engine";
 
 export default function Home() {
+  const handleLaunchQuote = () => {
+    CROEngine.getInstance().trackEngagement('click_cta', { location: 'hero' });
+  };
+
   return (
     <main className={styles.main}>
       <div className="bg-mesh"></div>
@@ -19,9 +24,14 @@ export default function Home() {
             2026 Enterprise-grade hygiene powered by autonomous systems and self-learning optimization.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <button className="glass" style={{ padding: '1.2rem 2.5rem', borderRadius: '15px', fontWeight: 'bold', background: 'var(--primary)', color: 'white' }}>
+            <Link 
+              href="/booking" 
+              onClick={handleLaunchQuote}
+              className="glass" 
+              style={{ padding: '1.2rem 2.5rem', borderRadius: '15px', fontWeight: 'bold', background: 'var(--primary)', color: 'white' }}
+            >
               Launch Quote
-            </button>
+            </Link>
             <button className="glass" style={{ padding: '1.2rem 2.5rem', borderRadius: '15px', fontWeight: 'bold' }}>
               Watch Demo
             </button>

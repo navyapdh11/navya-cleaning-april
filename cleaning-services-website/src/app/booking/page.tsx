@@ -1,17 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ThreeDModel } from '@/components/ThreeDModel';
 
 export default function BookingPage() {
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mythosResponse, setMythosResponse] = useState<any>(null);
   const [bookingId, setBookingId] = useState<number | null>(null);
+  const [recentBookings, setRecentBookings] = useState<any[]>([]);
 
   const [facilityName, setFacilityName] = useState('');
   const [sqft, setSqft] = useState(1000);
   const [date, setDate] = useState('');
+
+  useEffect(() => {
+    const sqftParam = searchParams.get('sqft');
+    if (sqftParam) setSqft(Number(sqftParam));
+    
+    fetchRecentBookings();
+  }, [searchParams]);
+
+  const fetchRecentBookings = async () => {
+    try {
+      const res = await fetch('/api/mythos');
+      const data = await res.json();
+      if (data.bookings) setRecentBookings(data.bookings);
+    } catch (err) {
+      console.error('Failed to fetch bookings');
+    }
+  };
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +55,7 @@ export default function BookingPage() {
         setStatus('Booking confirmed via Autonomous Logistics.');
         setMythosResponse(data.mythosData);
         setBookingId(data.bookingId);
+        fetchRecentBookings();
       } else {
         setStatus('Error scheduling via Mythos API.');
       }
@@ -118,7 +139,7 @@ export default function BookingPage() {
           )}
         </div>
 
-        {/* 3D Visualizer Column */}
+        {/* 3D Visualizer & Recent Bookings Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div className="glass" style={{ padding: '2rem', borderRadius: '24px', textAlign: 'center' }}>
             <h3 style={{ marginBottom: '1rem' }}>Fleet Allocation Matrix</h3>
@@ -126,6 +147,27 @@ export default function BookingPage() {
             <p style={{ marginTop: '1rem', opacity: 0.7, fontSize: '0.9rem' }}>
               Real-time visualization of sanitization drones. Drag to interact.
             </p>
+          </div>
+
+          <div className="glass" style={{ padding: '2rem', borderRadius: '24px' }}>
+            <h3 style={{ marginBottom: '1.5rem' }}>Recent Dispatches</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {recentBookings.length === 0 ? (
+                <p style={{ opacity: 0.5, fontStyle: 'italic' }}>No active dispatches detected.</p>
+              ) : (
+                recentBookings.map((b) => (
+                  <div key={b.id} style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontWeight: 'bold' }}>{b.facilityName}</div>
+                      <div style={{ fontSize: '0.8rem', opacity: 0.6 }}>{b.sqft} sqft • {b.date}</div>
+                    </div>
+                    <div style={{ fontSize: '0.7rem', padding: '0.3rem 0.6rem', borderRadius: '20px', background: 'rgba(0,255,0,0.1)', color: '#00cc00', border: '1px solid rgba(0,255,0,0.2)' }}>
+                      {b.status}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
 

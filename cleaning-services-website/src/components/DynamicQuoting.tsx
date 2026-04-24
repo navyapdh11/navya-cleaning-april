@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { BentoGrid, BentoItem } from './InteractiveElements';
 import { CROEngine } from '@/lib/cro-engine';
 
 export const DynamicQuoting: React.FC = () => {
+  const router = useRouter();
   const [sqft, setSqft] = useState(1000);
   const [serviceType, setServiceType] = useState('standard');
   const [frequency, setFrequency] = useState('weekly');
@@ -19,7 +21,7 @@ export const DynamicQuoting: React.FC = () => {
 
   const handleBookingStart = () => {
     CROEngine.getInstance().trackEngagement('booking_start', { sqft, serviceType, frequency, estimate });
-    alert('Enterprise Booking System Initializing...');
+    router.push(`/booking?sqft=${sqft}&service=${serviceType}`);
   };
 
   return (
