@@ -25,13 +25,18 @@
     "three": "^0.170.0"
   },
   "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
     "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^20",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/three": "^0.169.0",
+    "autoprefixer": "^10.5.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.3",
+    "postcss": "^8.5.12",
+    "tailwindcss": "^4.2.4",
     "typescript": "^5"
   }
 }

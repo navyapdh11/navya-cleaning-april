@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* 2026 Enterprise Core Palette */
   --primary: #0070f3;

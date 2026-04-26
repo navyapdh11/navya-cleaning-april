@@ -76,20 +76,24 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
                 <p style={{ opacity: 0.7 }}>Instantaneous data injection into your AEO dashboard for verifiable hygiene audits.</p>
               </div>
             </div>
-          </BentoItem>
-        </BentoGrid>
+          import { EndOfLeaseCalculator } from '@/components/EndOfLeaseCalculator';
 
-        {/* Special Placeholder for End of Lease Calculator */}
-        {service.slug === 'end-of-lease-cleaning' && (
-          <section style={{ marginTop: '4rem', textAlign: 'center' }} id="bond-calculator">
-             <div className="glass" style={{ padding: '4rem', borderRadius: '32px' }}>
-                <h2 style={{ marginBottom: '2rem' }}>Bond-Back <span style={{ color: 'var(--primary)' }}>Calculator</span></h2>
-                <p style={{ opacity: 0.7 }}>[Waiting for Enterprise Calculator Injection...]</p>
-                {/* User's calculator will be injected here */}
-             </div>
-          </section>
-        )}
-      </div>
-    </main>
-  );
+          export async function generateStaticParams() {
+          ...
+                  {/* Special Placeholder for End of Lease Calculator */}
+                  {service.slug === 'end-of-lease-cleaning' && (
+                    <section style={{ marginTop: '4rem', textAlign: 'center' }} id="bond-calculator">
+                       <div className="glass" style={{ padding: '4rem', borderRadius: '48px', border: '1px solid var(--primary)' }}>
+                          <div style={{ marginBottom: '4rem' }}>
+                            <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>Bond-Back <span style={{ color: 'var(--primary)' }}>Calculator</span></h2>
+                            <p style={{ opacity: 0.7, fontSize: '1.2rem' }}>Precision algorithmic estimation for your specific property node.</p>
+                          </div>
+                          <EndOfLeaseCalculator />
+                       </div>
+                    </section>
+                  )}
+                </div>
+              </main>
+            );
+          }
 }
