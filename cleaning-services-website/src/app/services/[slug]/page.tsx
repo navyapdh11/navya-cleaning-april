@@ -4,6 +4,7 @@ import { SERVICES } from '@/lib/data';
 import Link from 'next/link';
 import { BentoGrid, BentoItem } from '@/components/InteractiveElements';
 import { Shield, Zap, Target, BarChart3 } from 'lucide-react';
+import { EndOfLeaseCalculator } from '@/components/EndOfLeaseCalculator';
 
 export async function generateStaticParams() {
   return SERVICES.map((service) => ({
@@ -76,24 +77,22 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
                 <p style={{ opacity: 0.7 }}>Instantaneous data injection into your AEO dashboard for verifiable hygiene audits.</p>
               </div>
             </div>
-          import { EndOfLeaseCalculator } from '@/components/EndOfLeaseCalculator';
+          </BentoItem>
+        </BentoGrid>
 
-          export async function generateStaticParams() {
-          ...
-                  {/* Special Placeholder for End of Lease Calculator */}
-                  {service.slug === 'end-of-lease-cleaning' && (
-                    <section style={{ marginTop: '4rem', textAlign: 'center' }} id="bond-calculator">
-                       <div className="glass" style={{ padding: '4rem', borderRadius: '48px', border: '1px solid var(--primary)' }}>
-                          <div style={{ marginBottom: '4rem' }}>
-                            <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>Bond-Back <span style={{ color: 'var(--primary)' }}>Calculator</span></h2>
-                            <p style={{ opacity: 0.7, fontSize: '1.2rem' }}>Precision algorithmic estimation for your specific property node.</p>
-                          </div>
-                          <EndOfLeaseCalculator />
-                       </div>
-                    </section>
-                  )}
+        {/* Special Placeholder for End of Lease Calculator */}
+        {service.slug === 'end-of-lease-cleaning' && (
+          <section style={{ marginTop: '4rem', textAlign: 'center' }} id="bond-calculator">
+             <div className="glass" style={{ padding: '4rem', borderRadius: '48px', border: '1px solid var(--primary)' }}>
+                <div style={{ marginBottom: '4rem' }}>
+                  <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>Bond-Back <span style={{ color: 'var(--primary)' }}>Calculator</span></h2>
+                  <p style={{ opacity: 0.7, fontSize: '1.2rem' }}>Precision algorithmic estimation for your specific property node.</p>
                 </div>
-              </main>
-            );
-          }
+                <EndOfLeaseCalculator />
+             </div>
+          </section>
+        )}
+      </div>
+    </main>
+  );
 }

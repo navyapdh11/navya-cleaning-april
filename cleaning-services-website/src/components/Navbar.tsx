@@ -55,7 +55,7 @@ export const Navbar: React.FC = () => {
       </Link>
       
       {/* Desktop Navigation */}
-      <div style={{ display: 'none', md: 'flex', gap: '2.5rem', alignItems: 'center' }} className="desktop-nav">
+      <div style={{ display: 'none', gap: '2.5rem', alignItems: 'center' }} className="desktop-nav">
         {navLinks.map((link) => (
           <Link 
             key={link.path} 
@@ -171,7 +171,7 @@ export const Navbar: React.FC = () => {
         {/* Mobile Toggle */}
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          style={{ display: 'flex', md: 'none', opacity: 0.6 }}
+          style={{ display: 'flex', opacity: 0.6 }}
         >
           {isMobileMenuOpen ? <X /> : <Menu />}
         </button>

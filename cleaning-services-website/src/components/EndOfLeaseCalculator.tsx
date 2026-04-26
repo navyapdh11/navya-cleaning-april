@@ -1,29 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MaterialSymbol } from './InteractiveElements'; // I might need to create this or use lucide-react
-import { SERVICES, STATES } from '@/lib/data';
 import { 
-  Home, 
-  Apartment, 
-  HolidayVillage, 
   CheckCircle2, 
   Minus, 
   Plus, 
-  SquareFoot,
-  Window,
-  Layers,
+  Layout,
   Microwave,
-  WallArt,
-  Garage,
-  Chair,
-  Bed,
-  Receipt,
-  ShieldCheck,
+  Undo2,
   Lock,
   ArrowRight,
-  Calculator
-} from 'lucide-react'; // Using Lucide since I have it installed
+  ShieldCheck
+} from 'lucide-react'; 
 
 export const EndOfLeaseCalculator: React.FC = () => {
   const [propertyType, setPropertyType] = useState('apartment');
@@ -41,8 +29,6 @@ export const EndOfLeaseCalculator: React.FC = () => {
   const [upholsterySeats, setUpholsterySeats] = useState(0);
   const [mattressClean, setMattressClean] = useState<'none' | 'light' | 'deep'>('none');
   const [walls, setWalls] = useState(0);
-  const [carpetType, setCarpetType] = useState<'residential' | 'commercial'>('residential');
-  const [carpetRooms, setCarpetRooms] = useState(0);
 
   const [priceRange, setPriceRange] = useState({ min: 480, max: 610 });
 
@@ -72,14 +58,13 @@ export const EndOfLeaseCalculator: React.FC = () => {
     if (mattressClean === 'deep') addOns += 35;
     
     addOns += walls * 8;
-    addOns += carpetRooms * 30;
 
     const total = base + addOns;
     setPriceRange({
       min: Math.round(total * 0.95),
       max: Math.round(total * 1.15)
     });
-  }, [propertyType, bedrooms, bathrooms, sqm, ovenClean, windowGround, window2nd, windowSliding, windowHardWater, garageDeepScrub, upholsterySeats, mattressClean, walls, carpetRooms]);
+  }, [propertyType, bedrooms, bathrooms, sqm, ovenClean, windowGround, window2nd, windowSliding, windowHardWater, garageDeepScrub, upholsterySeats, mattressClean, walls]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
@@ -105,9 +90,9 @@ export const EndOfLeaseCalculator: React.FC = () => {
                     />
                     <div className="flex w-full flex-col items-center text-center gap-4 p-6">
                       <div className={`h-14 w-14 rounded-full flex items-center justify-center border ${propertyType === type ? 'bg-primary/20 border-primary/30 text-primary' : 'bg-white/5 border-white/10 text-slate-400'}`}>
-                        {type === 'apartment' && <span className="material-symbols-outlined text-3xl">apartment</span>}
-                        {type === 'house' && <span className="material-symbols-outlined text-3xl">home</span>}
-                        {type === 'townhouse' && <span className="material-symbols-outlined text-3xl">holiday_village</span>}
+                        <span className="material-symbols-outlined text-3xl">
+                          {type === 'apartment' ? 'apartment' : type === 'house' ? 'home' : 'holiday_village'}
+                        </span>
                       </div>
                       <span className={`font-semibold capitalize ${propertyType === type ? 'text-white' : 'text-slate-300'}`}>{type}</span>
                       {propertyType === type && <CheckCircle2 className="absolute top-4 right-4 text-primary" size={20} />}
@@ -170,7 +155,7 @@ export const EndOfLeaseCalculator: React.FC = () => {
               <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-2">
-                    <Window className="text-secondary p-2 bg-secondary/10 rounded-lg" size={40} /> Window Cleaning
+                    <span className="material-symbols-outlined text-secondary p-2 bg-secondary/10 rounded-lg">window</span> Window Cleaning
                   </h3>
                   <p className="text-sm text-slate-400">Internal windows/grooves included in standard clean.</p>
                 </div>
