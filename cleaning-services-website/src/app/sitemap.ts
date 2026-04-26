@@ -6,11 +6,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Static core routes
   const routes = [
     '',
-    '/about',
-    '/contact',
-    '/services',
     '/pricing',
-    '/booking'
+    '/booking',
+    '/compliance',
+    '/dashboard',
+    '/enterprise/ndis',
+    '/enterprise/real-estate',
+    '/enterprise/corporate'
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),

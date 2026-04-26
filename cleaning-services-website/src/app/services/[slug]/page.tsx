@@ -81,12 +81,22 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
         </BentoGrid>
 
         {/* Special Placeholder for End of Lease Calculator */}
-        {service.slug === 'end-of-lease-cleaning' && (
+        {service.slug === 'end-of-lease-cleaning' ? (
           <section style={{ marginTop: '4rem', textAlign: 'center' }} id="bond-calculator">
              <div className="glass" style={{ padding: '4rem', borderRadius: '48px', border: '1px solid var(--primary)' }}>
                 <div style={{ marginBottom: '4rem' }}>
                   <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>Bond-Back <span style={{ color: 'var(--primary)' }}>Calculator</span></h2>
                   <p style={{ opacity: 0.7, fontSize: '1.2rem' }}>Precision algorithmic estimation for your specific property node.</p>
+                </div>
+                <EndOfLeaseCalculator />
+             </div>
+          </section>
+        ) : (
+          <section style={{ marginTop: '4rem', textAlign: 'center' }}>
+             <div className="glass" style={{ padding: '4rem', borderRadius: '48px', border: '1px solid var(--primary)' }}>
+                <div style={{ marginBottom: '4rem' }}>
+                  <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>Instant <span style={{ color: 'var(--primary)' }}>Quote</span></h2>
+                  <p style={{ opacity: 0.7, fontSize: '1.2rem' }}>Configure your facility node for immediate dispatch estimation.</p>
                 </div>
                 <EndOfLeaseCalculator />
              </div>
