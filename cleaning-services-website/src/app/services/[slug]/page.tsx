@@ -82,24 +82,26 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
 
         {/* Special Placeholder for End of Lease Calculator */}
         {service.slug === 'end-of-lease-cleaning' ? (
-          <section style={{ marginTop: '4rem', textAlign: 'center' }} id="bond-calculator">
-             <div className="glass" style={{ padding: '4rem', borderRadius: '48px', border: '1px solid var(--primary)' }}>
-                <div style={{ marginBottom: '4rem' }}>
-                  <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>Bond-Back <span style={{ color: 'var(--primary)' }}>Calculator</span></h2>
-                  <p style={{ opacity: 0.7, fontSize: '1.2rem' }}>Precision algorithmic estimation for your specific property node.</p>
-                </div>
-                <EndOfLeaseCalculator />
+          <section style={{ marginTop: '6rem', position: 'relative' }} id="bond-calculator">
+             {/* Background ambient glow */}
+             <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translate(-50%, -50%)', width: '80%', height: '80%', background: 'radial-gradient(circle, var(--primary) 0%, transparent 60%)', opacity: 0.1, filter: 'blur(100px)', zIndex: -1 }}></div>
+             
+             <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+                <h2 style={{ fontSize: '3.5rem', fontWeight: '900', letterSpacing: '-2px', marginBottom: '1rem' }}>Node <span style={{ color: 'var(--primary)' }}>Estimation</span> Matrix</h2>
+                <p style={{ opacity: 0.7, fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>Precision algorithmic quoting for your specific property constraints.</p>
              </div>
+             <EndOfLeaseCalculator />
           </section>
         ) : (
-          <section style={{ marginTop: '4rem', textAlign: 'center' }}>
-             <div className="glass" style={{ padding: '4rem', borderRadius: '48px', border: '1px solid var(--primary)' }}>
-                <div style={{ marginBottom: '4rem' }}>
-                  <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>Instant <span style={{ color: 'var(--primary)' }}>Quote</span></h2>
-                  <p style={{ opacity: 0.7, fontSize: '1.2rem' }}>Configure your facility node for immediate dispatch estimation.</p>
-                </div>
-                <EndOfLeaseCalculator />
+          <section style={{ marginTop: '6rem', position: 'relative' }}>
+             {/* Background ambient glow */}
+             <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translate(-50%, -50%)', width: '80%', height: '80%', background: 'radial-gradient(circle, var(--primary) 0%, transparent 60%)', opacity: 0.1, filter: 'blur(100px)', zIndex: -1 }}></div>
+             
+             <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+                <h2 style={{ fontSize: '3.5rem', fontWeight: '900', letterSpacing: '-2px', marginBottom: '1rem' }}>Instant <span style={{ color: 'var(--primary)' }}>Quote</span></h2>
+                <p style={{ opacity: 0.7, fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>Configure your facility node for immediate dispatch estimation.</p>
              </div>
+             <EndOfLeaseCalculator />
           </section>
         )}
       </div>
