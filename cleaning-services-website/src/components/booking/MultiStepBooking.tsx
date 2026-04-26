@@ -123,22 +123,22 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start w-full max-w-[1400px] mx-auto">
+    <div className="flex flex-col xl:flex-row gap-8 items-start w-full max-w-[1400px] mx-auto">
       {/* Main Content */}
       <div className="flex-1 w-full">
         {/* Stepper */}
-        <nav className="mb-12 px-4">
+        <nav className="mb-12 px-2 sm:px-4">
           <ol className="flex items-center w-full justify-between">
             {steps.map((s, i) => (
               <li key={i} className="relative flex-1 group">
                 <div className="flex flex-col items-center">
-                   <div className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${booking.step > i + 1 ? 'bg-primary border-primary' : booking.step === i + 1 ? 'border-primary shadow-[0_0_15px_rgba(99,102,241,0.5)]' : 'border-white/10 bg-white/5'}`}>
-                      {booking.step > i + 1 ? <Check size={20} className="text-white" /> : <span className={booking.step === i + 1 ? 'text-primary' : 'text-slate-500'}>{i + 1}</span>}
+                   <div className={`relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full border-2 transition-all ${booking.step > i + 1 ? 'bg-primary border-primary' : booking.step === i + 1 ? 'border-primary shadow-[0_0_15px_rgba(99,102,241,0.5)]' : 'border-white/10 bg-white/5'}`}>
+                      {booking.step > i + 1 ? <Check size={16} className="text-white sm:w-5 sm:h-5" /> : <span className={`text-xs sm:text-base ${booking.step === i + 1 ? 'text-primary' : 'text-slate-500'}`}>{i + 1}</span>}
                    </div>
-                   <span className={`absolute -bottom-8 text-xs font-bold uppercase tracking-wider ${booking.step === i + 1 ? 'text-primary' : 'text-slate-500'}`}>{s.title}</span>
+                   <span className={`absolute -bottom-6 sm:-bottom-8 text-[9px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap ${booking.step === i + 1 ? 'text-primary' : 'text-slate-500'}`}>{s.title}</span>
                 </div>
                 {i < steps.length - 1 && (
-                  <div className={`absolute top-5 left-[calc(50%+25px)] right-[calc(-50%+25px)] h-[2px] ${booking.step > i + 1 ? 'bg-primary' : 'bg-white/10'}`}></div>
+                  <div className={`absolute top-4 sm:top-5 left-[calc(50%+20px)] right-[calc(-50%+20px)] sm:left-[calc(50%+25px)] sm:right-[calc(-50%+25px)] h-[2px] ${booking.step > i + 1 ? 'bg-primary' : 'bg-white/10'}`}></div>
                 )}
               </li>
             ))}
@@ -152,9 +152,9 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                    {/* Property Type */}
-                  <section className="glass p-6 md:col-span-3 rounded-[32px]">
+                  <section className="glass p-6 md:col-span-2 lg:col-span-3 rounded-[32px]">
                     <h2 className="text-sm font-bold text-slate-300 mb-6 uppercase tracking-widest flex items-center gap-2">Property Type</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {['apartment', 'house', 'townhouse'].map((type) => (
                         <label key={type} className={`relative flex cursor-pointer rounded-xl transition-all ${booking.propertyType === type ? 'ring-2 ring-primary bg-primary/10' : 'bg-white/5 hover:bg-white/10'}`}>
                           <input type="radio" className="sr-only" checked={booking.propertyType === type} onChange={() => setBooking(p => ({...p, propertyType: type}))} />
@@ -186,7 +186,7 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
                        <button onClick={() => setBooking(p => ({...p, bathrooms: p.bathrooms+1}))} className="w-12 h-12"><Plus /></button>
                     </div>
                   </section>
-                  <section className="glass p-6 rounded-[24px]">
+                  <section className="glass p-6 rounded-[24px] md:col-span-2 lg:col-span-1">
                     <h2 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-2">Est. Size</h2>
                     <div className="text-2xl font-bold text-primary mb-4">~{booking.sqm} sqm</div>
                     <input type="range" min="30" max="500" value={booking.sqm} onChange={e => setBooking(p => ({...p, sqm: parseInt(e.target.value)}))} className="w-full h-2 bg-white/10 rounded-lg appearance-none accent-primary" />
@@ -196,21 +196,21 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
                 {/* Add-ons */}
                 <div className="pt-8 flex items-center gap-4">
                   <div className="h-px bg-white/10 flex-grow"></div>
-                  <h2 className="text-2xl font-bold">Premium Add-ons</h2>
+                  <h2 className="text-2xl font-bold whitespace-nowrap">Premium Add-ons</h2>
                   <div className="h-px bg-white/10 flex-grow"></div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                   {service.addons.map(addon => (
                     <div key={addon.id} className="glass p-6 rounded-[24px] flex flex-col justify-between">
-                       <div className="flex justify-between items-start mb-4">
+                       <div className="flex justify-between items-start mb-4 gap-4">
                           <div>
-                             <h3 className="font-bold flex items-center gap-2">
-                                <Zap size={18} className="text-secondary" /> {addon.name}
+                             <h3 className="font-bold flex items-center gap-2 text-sm sm:text-base">
+                                <Zap size={18} className="text-secondary shrink-0" /> {addon.name}
                              </h3>
                              <p className="text-xs text-slate-400 mt-1">{addon.description}</p>
                           </div>
-                          <div className="text-primary font-bold text-lg">${addon.price}</div>
+                          <div className="text-primary font-bold text-lg whitespace-nowrap">${addon.price}</div>
                        </div>
                        {addon.type === 'counter' ? (
                          <div className="flex items-center justify-between bg-black/20 p-2 rounded-xl border border-white/5">
@@ -382,16 +382,16 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
                <div className="h-px bg-white/5 w-full"></div>
 
                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between"><span className="text-slate-500">Base Investment</span><span className="font-bold">${service.basePrice}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Node Scale ({booking.bedrooms}B / {booking.bathrooms}Ba)</span><span className="font-bold">+${(booking.bedrooms-1)*30 + (booking.bathrooms-1)*20}</span></div>
+                  <div className="flex justify-between gap-4"><span className="text-slate-500">Base Investment</span><span className="font-bold whitespace-nowrap">${service.basePrice}</span></div>
+                  <div className="flex justify-between gap-4"><span className="text-slate-500 truncate">Node Scale ({booking.bedrooms}B / {booking.bathrooms}Ba)</span><span className="font-bold whitespace-nowrap">+${(booking.bedrooms-1)*30 + (booking.bathrooms-1)*20}</span></div>
                   
                   {Object.entries(booking.addons).map(([id, qty]) => {
                     const addon = service.addons.find(a => a.id === id);
                     if (!addon || qty === 0) return null;
                     return (
-                      <div key={id} className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
-                        <span className="text-xs text-slate-400">{addon.name} {qty > 1 ? `(x${qty})` : ''}</span>
-                        <span className="font-bold text-primary">+${addon.price * qty}</span>
+                      <div key={id} className="flex justify-between items-center bg-white/5 p-2 rounded-lg gap-4">
+                        <span className="text-xs text-slate-400 truncate">{addon.name} {qty > 1 ? `(x${qty})` : ''}</span>
+                        <span className="font-bold text-primary whitespace-nowrap">+${addon.price * qty}</span>
                       </div>
                     );
                   })}
