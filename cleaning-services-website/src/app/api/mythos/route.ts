@@ -68,6 +68,33 @@ export async function POST(request: Request) {
       });
     }
 
+    if (action === 'get_flashcards') {
+      const flashcards = await prisma.flashcard.findMany({
+        orderBy: { order: 'asc' }
+      });
+      return NextResponse.json({ flashcards });
+    }
+
+    if (action === 'save_flashcard') {
+      const { id, title, content, icon, category, isActive, order } = payload;
+      const flashcard = await prisma.flashcard.upsert({
+        where: { id: id || 'new' },
+        update: { title, content, icon, category, isActive, order },
+        create: { title, content, icon, category, isActive, order }
+      });
+      return NextResponse.json({ success: true, flashcard });
+    }
+
+    if (action === 'update_config') {
+      const { key, value } = payload;
+      const config = await prisma.siteConfig.upsert({
+        where: { key },
+        update: { value },
+        create: { key, value }
+      });
+      return NextResponse.json({ success: true, config });
+    }
+
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
   } catch (error) {
     console.error('[Prisma API Error]:', error);

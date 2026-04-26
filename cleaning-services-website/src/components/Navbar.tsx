@@ -19,6 +19,7 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
+    { name: 'Dashboard', path: '/dashboard' },
     { name: 'Pricing', path: '/pricing' },
     { name: 'Compliance', path: '/compliance' },
   ];
@@ -108,6 +109,18 @@ export const Navbar: React.FC = () => {
                     <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{s.category}</span>
                   </Link>
                 ))}
+                <Link 
+                  href="/admin"
+                  style={{ 
+                    padding: '0.8rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.2rem',
+                    background: 'rgba(0, 112, 243, 0.1)', border: '1px solid var(--primary)', transition: 'background 0.2s',
+                    gridColumn: 'span 2'
+                  }}
+                  className="nav-item-hover"
+                >
+                  <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--primary)' }}>Admin Center</span>
+                  <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>Full Network & CMS Control</span>
+                </Link>
               </motion.div>
             )}
           </AnimatePresence>

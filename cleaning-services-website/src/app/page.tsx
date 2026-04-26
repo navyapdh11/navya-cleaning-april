@@ -71,14 +71,14 @@ export default function Home() {
             <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>Enter Partner Hub →</span>
           </Link>
 
-          <div className="glass" style={{ padding: '3rem', borderRadius: '32px', textAlign: 'center' }}>
+          <Link href="/enterprise/corporate" className="glass" style={{ padding: '3rem', borderRadius: '32px', textAlign: 'center', transition: 'transform 0.3s' }}>
             <div style={{ background: 'rgba(255, 0, 128, 0.1)', width: '80px', height: '80px', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: 'var(--accent)' }}>
               <Briefcase size={40} />
             </div>
-            <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Corporate Accounts</h3>
+            <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Corporate Hub</h3>
             <p style={{ opacity: 0.7, marginBottom: '2rem' }}>National-scale sanitization for office networks, retail chains, and industrial facilities.</p>
-            <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>Coming Q3 2026</span>
-          </div>
+            <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>Enter Corporate Portal →</span>
+          </Link>
         </div>
       </section>
 
