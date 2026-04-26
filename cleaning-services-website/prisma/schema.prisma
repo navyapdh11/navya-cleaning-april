@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String
+  basePrice   Float
+  category    String    // Residential, Enterprise
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model StateLocation {
+  id        String    @id @default(cuid())
+  code      String    @unique // NSW, VIC, etc.
+  name      String
+  isActive  Boolean   @default(true)
+  bookings  Booking[]
+}
+
+model Booking {
+  id           String   @id @default(cuid())
+  facilityName String
+  sqft         Int
+  date         DateTime
+  status       String   @default("PENDING")
+  service      Service  @relation(fields: [serviceId], references: [id])
+  serviceId    String
+  state        StateLocation @relation(fields: [stateCode], references: [code])
+  stateCode    String
+  enterpriseClient EnterpriseClient? @relation(fields: [enterpriseClientId], references: [id])
+  enterpriseClientId String?
+  mythosData   Json?    // Store the 2026 specific metadata (Karpathy Pattern)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EnterpriseClient {
+  id          String    @id @default(cuid())
+  name        String
+  type        String    // NDIS, REAL_ESTATE, BUSINESS
+  contactInfo Json
+  apiId       String?   @unique
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  details   Json
+  timestamp DateTime @default(now())
+}

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://cleanpro.com.au';
+  const baseUrl = 'https://cleaning-services-website-teal.vercel.app';
   
   // Static core routes
   const routes = [

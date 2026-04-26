@@ -15,11 +15,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "CleanPro AU | Professional Cleaning Services Australia",
-    template: "%s | CleanPro AU",
+    default: "NAVYA MYTHOS | Enterprise Sanitization",
+    template: "%s | NAVYA MYTHOS",
   },
-  description: "Australia's top-rated professional cleaning services. Domestic, end-of-lease, and commercial cleaning with bond-back guarantees across all states.",
-  // ... rest of metadata
+  description: "2026 Enterprise-grade hygiene powered by autonomous systems, self-learning optimization, and AEO-ready compliance data.",
 };
 
 export default function RootLayout({

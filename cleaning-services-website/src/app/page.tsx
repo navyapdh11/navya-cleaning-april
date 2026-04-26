@@ -6,6 +6,8 @@ import styles from "./page.module.css";
 import { BentoGrid, BentoItem, FlashCard } from "@/components/InteractiveElements";
 import { DynamicQuoting } from "@/components/DynamicQuoting";
 import { CROEngine } from "@/lib/cro-engine";
+import { SERVICES, STATES } from "@/lib/data";
+import { Shield, Zap, Globe, Users, Building2, Briefcase } from 'lucide-react';
 
 export default function Home() {
   const handleLaunchQuote = () => {
@@ -18,25 +20,28 @@ export default function Home() {
       
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className="glass" style={{ padding: '4rem', borderRadius: '40px', textAlign: 'center', maxWidth: '1000px' }}>
-          <h1 style={{ fontSize: '5rem', lineHeight: '1', marginBottom: '1.5rem', fontWeight: '900' }}>
-            Next-Gen <span style={{ color: 'var(--primary)', filter: 'drop-shadow(0 0 20px var(--primary))' }}>Sanitization</span>
+        <div className="glass" style={{ padding: '5rem 2rem', borderRadius: '48px', textAlign: 'center', maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', padding: '0.5rem 1.5rem', borderRadius: '50px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', marginBottom: '2rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
+            <span style={{ color: 'var(--primary)' }}>●</span> Australia's First AEO-Verified Sanitization Network
+          </div>
+          <h1 style={{ fontSize: '6rem', lineHeight: '0.9', marginBottom: '2rem', fontWeight: '900', letterSpacing: '-4px' }}>
+            Next-Gen <span style={{ color: 'var(--primary)', filter: 'drop-shadow(0 0 30px var(--primary))' }}>Sanitization</span>
           </h1>
-          <p style={{ fontSize: '1.5rem', opacity: 0.8, marginBottom: '2.5rem' }}>
-            2026 Enterprise-grade hygiene powered by autonomous systems and self-learning optimization.
+          <p style={{ fontSize: '1.6rem', opacity: 0.8, marginBottom: '3.5rem', maxWidth: '800px', margin: '0 auto 3.5rem auto' }}>
+            Enterprise-grade hygiene powered by autonomous systems, national-scale logistics, and self-learning optimization for the 2026 market.
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
             <Link 
               href="/booking" 
               onClick={handleLaunchQuote}
               className="glass" 
-              style={{ padding: '1.2rem 2.5rem', borderRadius: '15px', fontWeight: 'bold', background: 'var(--primary)', color: 'white' }}
+              style={{ padding: '1.5rem 3.5rem', borderRadius: '20px', fontWeight: '900', background: 'var(--primary)', color: 'white', fontSize: '1.1rem', boxShadow: '0 10px 30px rgba(0, 112, 243, 0.4)' }}
             >
-              Launch Quote
+              Initialize Dispatch
             </Link>
-            <button className="glass" style={{ padding: '1.2rem 2.5rem', borderRadius: '15px', fontWeight: 'bold' }}>
-              Watch Demo
-            </button>
+            <Link href="/pricing" className="glass" style={{ padding: '1.5rem 3.5rem', borderRadius: '20px', fontWeight: '900', fontSize: '1.1rem' }}>
+              View Pricing
+            </Link>
           </div>
         </div>
       </section>
@@ -44,101 +49,91 @@ export default function Home() {
       {/* Dynamic Quoting Section */}
       <DynamicQuoting />
 
-      {/* Feature Bento Grid */}
-      <section style={{ padding: '4rem 2rem' }}>
-        <h2 style={{ fontSize: '3rem', marginBottom: '3rem', textAlign: 'center' }}>Enterprise <span style={{ color: 'var(--secondary)' }}>Core</span> Capabilities</h2>
-        <BentoGrid>
-          <BentoItem style={{ padding: '2rem' }}>
-            <div style={{ fontSize: '3rem' }}>🤖</div>
-            <h3>Autonomous Logistics</h3>
-            <p>Our fleet of sanitization bots operates 24/7 with zero human intervention required.</p>
-          </BentoItem>
-          <BentoItem style={{ padding: '2rem' }}>
-            <div style={{ fontSize: '3rem' }}>🌍</div>
-            <h3>AEO Optimized</h3>
-            <p>Optimized for the next generation of Answer Engines and Generative Search.</p>
-          </BentoItem>
-          <BentoItem span={2} style={{ padding: '2rem' }}>
-            <div style={{ fontSize: '3rem' }}>📊</div>
-            <h3>Real-time Analytics</h3>
-            <p>Monitor your facility's health markers via our enterprise dashboard with millisecond precision.</p>
-          </BentoItem>
-        </BentoGrid>
+      {/* Enterprise Portals Section */}
+      <section style={{ padding: '6rem 2rem' }}>
+        <h2 style={{ fontSize: '3.5rem', marginBottom: '4rem', textAlign: 'center', fontWeight: '900' }}>Enterprise <span style={{ color: 'var(--secondary)' }}>Access</span> Portals</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2.5rem', maxWidth: '1200px', margin: '0 auto' }}>
+          <Link href="/enterprise/ndis" className="glass" style={{ padding: '3rem', borderRadius: '32px', textAlign: 'center', transition: 'transform 0.3s' }}>
+            <div style={{ background: 'rgba(121, 40, 202, 0.1)', width: '80px', height: '80px', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: 'var(--secondary)' }}>
+              <Users size={40} />
+            </div>
+            <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>NDIS Participants</h3>
+            <p style={{ opacity: 0.7, marginBottom: '2rem' }}>Dedicated compliance and direct billing flow for NDIS plan managers and self-managed participants.</p>
+            <span style={{ color: 'var(--secondary)', fontWeight: 'bold' }}>Enter NDIS Portal →</span>
+          </Link>
+
+          <Link href="/enterprise/real-estate" className="glass" style={{ padding: '3rem', borderRadius: '32px', textAlign: 'center', transition: 'transform 0.3s' }}>
+            <div style={{ background: 'rgba(0, 112, 243, 0.1)', width: '80px', height: '80px', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: 'var(--primary)' }}>
+              <Building2 size={40} />
+            </div>
+            <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Real Estate B2B</h3>
+            <p style={{ opacity: 0.7, marginBottom: '2rem' }}>Bulk bond cleaning dispatch for property managers with full CRM data synchronization.</p>
+            <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>Enter Partner Hub →</span>
+          </Link>
+
+          <div className="glass" style={{ padding: '3rem', borderRadius: '32px', textAlign: 'center' }}>
+            <div style={{ background: 'rgba(255, 0, 128, 0.1)', width: '80px', height: '80px', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: 'var(--accent)' }}>
+              <Briefcase size={40} />
+            </div>
+            <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Corporate Accounts</h3>
+            <p style={{ opacity: 0.7, marginBottom: '2rem' }}>National-scale sanitization for office networks, retail chains, and industrial facilities.</p>
+            <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>Coming Q3 2026</span>
+          </div>
+        </div>
       </section>
 
-      {/* Client Case Studies Section */}
-      <section style={{ padding: '4rem 2rem' }}>
-        <h2 style={{ fontSize: '3rem', marginBottom: '3rem', textAlign: 'center' }}>Proven <span style={{ color: 'var(--primary)' }}>Results</span></h2>
-        <div style={{ display: 'flex', gap: '2rem', overflowX: 'auto', paddingBottom: '2rem', scrollSnapType: 'x mandatory' }}>
-          {[
-            { quote: "NAVYA MYTHOS reduced our pathogen load by 99.9% while cutting operational costs in half.", author: "Director of Facilities, TechCorp Alpha", metric: "50% Cost Reduction" },
-            { quote: "The autonomous fleet integrates seamlessly with our security protocols. Invisible yet highly effective.", author: "Operations Lead, Global Logistics Hub", metric: "Zero Downtime" },
-            { quote: "Their AEO optimization means we have verifiable hygiene data for our audits instantly.", author: "Compliance Officer, BioMed Solutions", metric: "100% Audit Pass" }
-          ].map((testimonial, i) => (
-            <div key={i} className="glass" style={{ minWidth: '350px', padding: '2.5rem', borderRadius: '24px', scrollSnapAlign: 'start', flex: '0 0 auto' }}>
-              <div style={{ fontSize: '2rem', color: 'var(--accent)', marginBottom: '1rem' }}>“</div>
-              <p style={{ fontSize: '1.2rem', marginBottom: '2rem', fontStyle: 'italic' }}>{testimonial.quote}</p>
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
-                <p style={{ fontWeight: 'bold' }}>{testimonial.author}</p>
-                <p style={{ color: 'var(--secondary)', fontSize: '0.9rem', marginTop: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{testimonial.metric}</p>
-              </div>
-            </div>
+      {/* National Coverage Section */}
+      <section style={{ padding: '6rem 2rem', background: 'rgba(255,255,255,0.02)' }}>
+        <h2 style={{ fontSize: '3.5rem', marginBottom: '1.5rem', textAlign: 'center', fontWeight: '900' }}>National <span style={{ color: 'var(--primary)' }}>Infrastructure</span></h2>
+        <p style={{ textAlign: 'center', opacity: 0.7, marginBottom: '4rem', fontSize: '1.2rem' }}>Active nodes and AEO compliance monitoring across all Australian territories.</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', maxWidth: '1000px', margin: '0 auto' }}>
+          {STATES.map((state) => (
+            <Link 
+              key={state.code} 
+              href={`/locations/${state.code.toLowerCase()}`}
+              className="glass"
+              style={{ padding: '1rem 2rem', borderRadius: '15px', fontWeight: 'bold', fontSize: '1.1rem', transition: 'all 0.2s' }}
+            >
+              {state.name}
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* FAQ Flash Cards */}
-      <section style={{ padding: '4rem 2rem', background: 'rgba(0,0,0,0.05)' }}>
-        <h2 style={{ fontSize: '3rem', marginBottom: '3rem', textAlign: 'center' }}>Trust & <span style={{ color: 'var(--accent)' }}>Assurance</span></h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-          <FlashCard 
-            front={
-              <div>
-                <h3>Is it safe for pets?</h3>
-                <p style={{ opacity: 0.7 }}>Hover to reveal</p>
-              </div>
-            }
-            back={
-              <div>
-                <h3>100% Bio-Safe</h3>
-                <p>We use molecular-grade solutions that are certified non-toxic for all biological entities.</p>
-              </div>
-            }
-          />
-          <FlashCard 
-            front={
-              <div>
-                <h3>Emergency Response?</h3>
-                <p style={{ opacity: 0.7 }}>Hover to reveal</p>
-              </div>
-            }
-            back={
-              <div>
-                <h3>Under 2 Hours</h3>
-                <p>Our rapid deployment teams are strategically positioned for instantaneous response.</p>
-              </div>
-            }
-          />
-          <FlashCard 
-            front={
-              <div>
-                <h3>2026 Compliance?</h3>
-                <p style={{ opacity: 0.7 }}>Hover to reveal</p>
-              </div>
-            }
-            back={
-              <div>
-                <h3>ISO-2026-X</h3>
-                <p>Exceeding all future safety and environmental standards established for the next decade.</p>
-              </div>
-            }
-          />
-        </div>
+      {/* Feature Bento Grid */}
+      <section style={{ padding: '8rem 2rem' }}>
+        <h2 style={{ fontSize: '3.5rem', marginBottom: '40px', textAlign: 'center', fontWeight: '900' }}>Enterprise <span style={{ color: 'var(--primary)' }}>Core</span> Capabilities</h2>
+        <BentoGrid>
+          <BentoItem style={{ padding: '3rem' }}>
+            <div style={{ fontSize: '3rem', color: 'var(--primary)', marginBottom: '1.5rem' }}><Zap size={48} /></div>
+            <h3>Autonomous Logistics</h3>
+            <p style={{ opacity: 0.7 }}>Our fleet of sanitization bots operates 24/7 with zero human intervention required, optimized for national scale.</p>
+          </BentoItem>
+          <BentoItem style={{ padding: '3rem' }}>
+            <div style={{ fontSize: '3rem', color: 'var(--secondary)', marginBottom: '1.5rem' }}><Globe size={48} /></div>
+            <h3>AEO Optimized</h3>
+            <p style={{ opacity: 0.7 }}>First-class data injection for the next generation of Answer Engines and Generative Search verification.</p>
+          </BentoItem>
+          <BentoItem span={2} style={{ padding: '3rem' }}>
+            <div style={{ fontSize: '3rem', color: 'var(--accent)', marginBottom: '1.5rem' }}><Shield size={48} /></div>
+            <h3>Real-time Compliance</h3>
+            <p style={{ opacity: 0.7 }}>Monitor your facility's health markers via our enterprise dashboard with millisecond precision. Fully ISO-2026-X compliant across Australia.</p>
+          </BentoItem>
+        </BentoGrid>
       </section>
 
       {/* Footer */}
-      <footer style={{ padding: '6rem 2rem', textAlign: 'center', opacity: 0.6 }}>
-        <p>© 2026 NAVYA MYTHOS Enterprise Sanitization. All Rights Reserved.</p>
+      <footer style={{ padding: '8rem 2rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ fontWeight: '900', fontSize: '2rem', marginBottom: '2rem' }}>
+          NAVYA <span style={{ color: 'var(--primary)' }}>MYTHOS</span>
+        </div>
+        <p style={{ opacity: 0.5 }}>© 2026 NAVYA MYTHOS Enterprise Sanitization. Australian National Node 01.</p>
+        <div style={{ marginTop: '2rem', display: 'flex', gap: '2rem', justifyContent: 'center', fontSize: '0.9rem', opacity: 0.6 }}>
+           <Link href="/services/end-of-lease-cleaning">End of Lease</Link>
+           <Link href="/enterprise/ndis">NDIS Support</Link>
+           <Link href="/compliance">Compliance</Link>
+           <Link href="/pricing">Pricing</Link>
+        </div>
       </footer>
     </main>
   );

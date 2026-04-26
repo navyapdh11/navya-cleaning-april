@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/admin/', '/booking/confirmation/'],
     },
-    sitemap: 'https://cleanpro.com.au/sitemap.xml',
+    sitemap: 'https://cleaning-services-website-teal.vercel.app/sitemap.xml',
   }
 }

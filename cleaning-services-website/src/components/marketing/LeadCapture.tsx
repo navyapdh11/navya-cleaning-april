@@ -28,23 +28,59 @@ export function LeadCapture() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden relative">
+    <div style={{ 
+      position: 'fixed', 
+      inset: 0, 
+      zIndex: 1000, 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+      padding: '1rem',
+      backdropFilter: 'blur(4px)'
+    }}>
+      <div className="glass" style={{ 
+        maxWidth: '500px', 
+        width: '100%', 
+        overflow: 'hidden', 
+        position: 'relative', 
+        borderRadius: '32px',
+        padding: '0'
+      }}>
         <button 
           onClick={() => setIsOpen(false)}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          style={{ 
+            position: 'absolute', 
+            top: '1.5rem', 
+            right: '1.5rem', 
+            color: 'rgba(255, 255, 255, 0.5)', 
+            fontSize: '1.2rem',
+            zIndex: 10
+          }}
           aria-label="Close"
         >
           ✕
         </button>
-        <div className="bg-green-600 p-6 text-white text-center">
-          <h2 className="text-2xl font-bold mb-2">Get 10% Off Your First Clean! 🇦🇺</h2>
-          <p>Join CleanPro AU and receive exclusive Australian discounts and cleaning tips.</p>
+        
+        <div style={{ 
+          background: 'linear-gradient(135deg, var(--primary), var(--secondary))', 
+          padding: '3rem 2rem', 
+          color: 'white', 
+          textAlign: 'center' 
+        }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem', lineHeight: '1.2' }}>
+            Complimentary <span style={{ color: '#fff', textShadow: '0 0 20px rgba(255,255,255,0.5)' }}>AEO Hygiene Audit</span>
+          </h2>
+          <p style={{ opacity: 0.9, fontSize: '1.1rem' }}>
+            Join the NAVYA MYTHOS network for real-time hygiene telemetry and enterprise sanitization protocols.
+          </p>
         </div>
-        <div className="p-6">
+
+        <div style={{ padding: '2.5rem' }}>
           {submitted ? (
-            <div className="text-center text-green-600 font-medium p-4">
-              Thank you! Check your inbox for your 10% off code.
+            <div style={{ textAlign: 'center', color: 'var(--primary)', fontWeight: 'bold', padding: '1rem' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
+              <p>Transmission Received. Our autonomous librarian is processing your request.</p>
             </div>
           ) : (
             <form 
@@ -52,28 +88,46 @@ export function LeadCapture() {
                 e.preventDefault();
                 setSubmitted(true);
               }}
-              className="space-y-4"
+              style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
             >
               <div>
                 <input 
                   type="email" 
                   required
-                  placeholder="Enter your email address"
+                  placeholder="Enterprise Email Address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                  style={{ 
+                    width: '100%', 
+                    padding: '1.2rem', 
+                    borderRadius: '16px', 
+                    border: '1px solid var(--glass-border)', 
+                    background: 'rgba(255, 255, 255, 0.05)', 
+                    color: 'inherit',
+                    outline: 'none',
+                    fontSize: '1rem'
+                  }}
                 />
               </div>
               <button 
                 type="submit"
-                className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors"
+                style={{ 
+                  width: '100%', 
+                  background: 'var(--primary)', 
+                  color: 'white', 
+                  fontWeight: 'bold', 
+                  padding: '1.2rem', 
+                  borderRadius: '16px', 
+                  transition: 'transform 0.2s',
+                  fontSize: '1.1rem'
+                }}
               >
-                Claim My 10% Discount
+                Request Audit Report
               </button>
             </form>
           )}
-          <p className="text-xs text-gray-500 text-center mt-4">
-            We respect your privacy. Unsubscribe at any time.
+          <p style={{ fontSize: '0.8rem', opacity: 0.5, textAlign: 'center', marginTop: '1.5rem' }}>
+            Privacy secured via quantum-grade encryption. Unsubscribe anytime.
           </p>
         </div>
       </div>
