@@ -123,31 +123,28 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
   ];
 
   return (
-    <div className="flex flex-col xl:flex-row gap-8 items-start w-full max-w-[1400px] mx-auto">
-      {/* Main Content */}
-      <div className="flex-1 w-full">
-        {/* Stepper */}
-        <nav className="mb-12 px-2 sm:px-4">
-          <ol className="flex items-center w-full justify-between">
-            {steps.map((s, i) => (
-              <li key={i} className="relative flex-1 group">
-                <div className="flex flex-col items-center">
-                   <div className={`relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full border-2 transition-all ${booking.step > i + 1 ? 'bg-primary border-primary' : booking.step === i + 1 ? 'border-primary shadow-[0_0_15px_rgba(99,102,241,0.5)]' : 'border-white/10 bg-white/5'}`}>
-                      {booking.step > i + 1 ? <Check size={16} className="text-white sm:w-5 sm:h-5" /> : <span className={`text-xs sm:text-base ${booking.step === i + 1 ? 'text-primary' : 'text-slate-500'}`}>{i + 1}</span>}
-                   </div>
-                   <span className={`absolute -bottom-6 sm:-bottom-8 text-[9px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap ${booking.step === i + 1 ? 'text-primary' : 'text-slate-500'}`}>{s.title}</span>
-                </div>
-                {i < steps.length - 1 && (
-                  <div className={`absolute top-4 sm:top-5 left-[calc(50%+20px)] right-[calc(-50%+20px)] sm:left-[calc(50%+25px)] sm:right-[calc(-50%+25px)] h-[2px] ${booking.step > i + 1 ? 'bg-primary' : 'bg-white/10'}`}></div>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
+    <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-x-12 gap-y-8 items-start w-full max-w-[1400px] mx-auto">
+      
+      {/* Stepper */}
+      <nav className="px-2 sm:px-4 xl:col-start-1 w-full order-1">
+        <ol className="flex items-start w-full justify-between">
+          {steps.map((s, i) => (
+            <li key={i} className="relative flex-1 flex flex-col items-center">
+              {i < steps.length - 1 && (
+                <div className={`absolute top-4 sm:top-5 left-[50%] w-full h-[2px] ${booking.step > i + 1 ? 'bg-primary' : 'bg-white/10'} -z-10`}></div>
+              )}
+              <div className={`relative z-10 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full border-2 transition-all bg-[#05050A] ${booking.step > i + 1 ? 'bg-primary border-primary' : booking.step === i + 1 ? 'border-primary shadow-[0_0_15px_rgba(99,102,241,0.5)]' : 'border-white/10'}`}>
+                 {booking.step > i + 1 ? <Check size={16} className="text-white sm:w-5 sm:h-5" /> : <span className={`text-xs sm:text-base ${booking.step === i + 1 ? 'text-primary' : 'text-slate-500'}`}>{i + 1}</span>}
+              </div>
+              <span className={`mt-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center max-w-[80px] sm:max-w-[100px] leading-tight ${booking.step === i + 1 ? 'text-primary' : 'text-slate-500'}`}>{s.title}</span>
+            </li>
+          ))}
+        </ol>
+      </nav>
 
-        {/* Step Content */}
-        <div className="mt-16">
-          <AnimatePresence mode="wait">
+      {/* Step Content */}
+      <div className="xl:col-start-1 w-full min-w-0 order-2 mt-4 xl:mt-0">
+        <AnimatePresence mode="wait">
             {booking.step === 1 && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -329,30 +326,10 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-
-        {/* Footer Navigation */}
-        {booking.step < 5 && (
-          <div className="mt-12 flex justify-between px-4">
-             <button 
-              disabled={booking.step === 1}
-              onClick={prevStep}
-              className={`flex items-center gap-2 font-bold transition-all ${booking.step === 1 ? 'opacity-0' : 'opacity-60 hover:opacity-100'}`}
-             >
-                <ChevronLeft size={20} /> Back
-             </button>
-             <button 
-              onClick={nextStep}
-              className="btn-primary px-10 py-4 rounded-2xl font-bold flex items-center gap-2"
-             >
-                Continue <ChevronRight size={20} />
-             </button>
-          </div>
-        )}
       </div>
 
       {/* Sidebar Summary */}
-      <aside className="w-full lg:w-[400px] flex-shrink-0 lg:sticky lg:top-28 z-20">
+      <aside className="w-full xl:w-[420px] flex-shrink-0 xl:sticky xl:top-28 z-20 xl:col-start-2 xl:row-start-1 xl:row-span-3 order-3 xl:order-none mt-8 xl:mt-0">
          <div className="glass rounded-[32px] overflow-hidden flex flex-col relative border-white/5">
             <div className="p-8 pb-6 border-b border-white/10">
                <h3 className="text-2xl font-bold">Dispatch Summary</h3>
@@ -415,6 +392,26 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
             </div>
          </div>
       </aside>
+
+      {/* Footer Navigation */}
+      {booking.step < 5 && (
+        <div className="mt-8 xl:mt-8 flex justify-between px-4 xl:col-start-1 w-full order-4 pb-12">
+           <button 
+            disabled={booking.step === 1}
+            onClick={prevStep}
+            className={`flex items-center gap-2 font-bold transition-all ${booking.step === 1 ? 'opacity-0' : 'opacity-60 hover:opacity-100'}`}
+           >
+              <ChevronLeft size={20} /> Back
+           </button>
+           <button 
+            onClick={nextStep}
+            className="btn-primary px-10 py-4 rounded-2xl font-bold flex items-center gap-2"
+           >
+              Continue <ChevronRight size={20} />
+           </button>
+        </div>
+      )}
+
     </div>
   );
 };
