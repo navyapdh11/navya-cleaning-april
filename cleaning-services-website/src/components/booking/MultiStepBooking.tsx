@@ -49,17 +49,25 @@ interface BookingState {
   cardCvc: string;
 }
 
+import { useSearchParams } from 'next/navigation';
+
 export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initialService }) => {
+  const searchParams = useSearchParams();
+  const initPropertyType = searchParams.get('propertyType') || 'apartment';
+  const initBedrooms = parseInt(searchParams.get('bedrooms') || '2', 10);
+  const initBathrooms = parseInt(searchParams.get('bathrooms') || '1', 10);
+  const initSqm = parseInt(searchParams.get('sqm') || '85', 10);
+
   const [service, setService] = useState<ServiceData>(
     SERVICES.find(s => s.slug === initialService) || SERVICES[0]
   );
 
   const [booking, setBooking] = useState<BookingState>({
     step: 1,
-    propertyType: 'apartment',
-    bedrooms: 2,
-    bathrooms: 1,
-    sqm: 85,
+    propertyType: initPropertyType,
+    bedrooms: isNaN(initBedrooms) ? 2 : initBedrooms,
+    bathrooms: isNaN(initBathrooms) ? 1 : initBathrooms,
+    sqm: isNaN(initSqm) ? 85 : initSqm,
     addons: {},
     date: '',
     time: '09:00',

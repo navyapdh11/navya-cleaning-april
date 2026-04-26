@@ -90,7 +90,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
                 <h2 style={{ fontSize: '3.5rem', fontWeight: '900', letterSpacing: '-2px', marginBottom: '1rem' }}>Node <span style={{ color: 'var(--primary)' }}>Estimation</span> Matrix</h2>
                 <p style={{ opacity: 0.7, fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>Precision algorithmic quoting for your specific property constraints.</p>
              </div>
-             <EndOfLeaseCalculator />
+             <EndOfLeaseCalculator serviceSlug={service.slug} basePrice={service.basePrice} />
           </section>
         ) : (
           <section style={{ marginTop: '6rem', position: 'relative' }}>
@@ -101,7 +101,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
                 <h2 style={{ fontSize: '3.5rem', fontWeight: '900', letterSpacing: '-2px', marginBottom: '1rem' }}>Instant <span style={{ color: 'var(--primary)' }}>Quote</span></h2>
                 <p style={{ opacity: 0.7, fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>Configure your facility node for immediate dispatch estimation.</p>
              </div>
-             <EndOfLeaseCalculator />
+             <EndOfLeaseCalculator serviceSlug={service.slug} basePrice={service.basePrice} />
           </section>
         )}
       </div>

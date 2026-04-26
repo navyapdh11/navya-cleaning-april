@@ -13,32 +13,31 @@ import {
 } from 'lucide-react'; 
 import { motion, AnimatePresence } from 'framer-motion';
 
-export const EndOfLeaseCalculator: React.FC = () => {
-  const router = useRouter();
-  const [propertyType, setPropertyType] = useState('apartment');
-  const [bedrooms, setBedrooms] = useState(2);
-  const [bathrooms, setBathrooms] = useState(1);
-  const [sqm, setSqm] = useState(85);
-  
-  const [priceRange, setPriceRange] = useState({ min: 480, max: 610 });
+export const EndOfLeaseCalculator: React.FC<{ serviceSlug?: string, basePrice?: number }> = ({ serviceSlug = 'end-of-lease-cleaning', basePrice = 350 }) => {
+    const router = useRouter();
+    const [propertyType, setPropertyType] = useState('apartment');
+    const [bedrooms, setBedrooms] = useState(2);
+    const [bathrooms, setBathrooms] = useState(1);
+    const [sqm, setSqm] = useState(85);
 
-  useEffect(() => {
-    let base = 350;
-    if (propertyType === 'house') base += 100;
-    if (propertyType === 'townhouse') base += 50;
-    base += (bedrooms - 1) * 50;
-    base += (bathrooms - 1) * 30;
-    const total = base + (sqm / 10);
-    setPriceRange({
-      min: Math.round(total * 0.95),
-      max: Math.round(total * 1.15)
-    });
-  }, [propertyType, bedrooms, bathrooms, sqm]);
+    const [priceRange, setPriceRange] = useState({ min: 480, max: 610 });
 
-  const handleStartBooking = () => {
-    router.push(`/booking?service=end-of-lease-cleaning&propertyType=${propertyType}&bedrooms=${bedrooms}&bathrooms=${bathrooms}&sqm=${sqm}`);
-  };
+    useEffect(() => {
+      let base = basePrice;
+      if (propertyType === 'house') base += 100;
+      if (propertyType === 'townhouse') base += 50;
+      base += (bedrooms - 1) * 50;
+      base += (bathrooms - 1) * 30;
+      const total = base + (sqm / 10);
+      setPriceRange({
+        min: Math.round(total * 0.95),
+        max: Math.round(total * 1.15)
+      });
+    }, [propertyType, bedrooms, bathrooms, sqm, basePrice]);
 
+    const handleStartBooking = () => {
+      router.push(`/booking?service=${serviceSlug}&propertyType=${propertyType}&bedrooms=${bedrooms}&bathrooms=${bathrooms}&sqm=${sqm}`);
+    };
   return (
     <div className="flex flex-col lg:flex-row gap-10 items-start text-left max-w-[1200px] mx-auto w-full font-sans">
       
