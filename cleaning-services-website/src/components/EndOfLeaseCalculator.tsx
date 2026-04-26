@@ -20,23 +20,27 @@ export const EndOfLeaseCalculator: React.FC<{ serviceSlug?: string, basePrice?: 
     const [bathrooms, setBathrooms] = useState(1);
     const [sqm, setSqm] = useState(85);
 
-    const [priceRange, setPriceRange] = useState({ min: 480, max: 610 });
+    const computeRange = (pType: string, beds: number, baths: number, sq: number, bPrice: number) => {
+      let base = bPrice;
+      if (pType === 'house') base += 100;
+      if (pType === 'townhouse') base += 50;
+      base += (beds - 1) * 50;
+      base += (baths - 1) * 30;
+      const total = base + (sq / 10);
+      return {
+        min: Math.max(Math.round(bPrice), Math.round(total)),
+        max: Math.round(total * 1.25)
+      };
+    };
+
+    const [priceRange, setPriceRange] = useState(() => computeRange('apartment', 2, 1, 85, basePrice));
 
     useEffect(() => {
-      let base = basePrice;
-      if (propertyType === 'house') base += 100;
-      if (propertyType === 'townhouse') base += 50;
-      base += (bedrooms - 1) * 50;
-      base += (bathrooms - 1) * 30;
-      const total = base + (sqm / 10);
-      setPriceRange({
-        min: Math.round(total * 0.95),
-        max: Math.round(total * 1.15)
-      });
+      setPriceRange(computeRange(propertyType, bedrooms, bathrooms, sqm, basePrice));
     }, [propertyType, bedrooms, bathrooms, sqm, basePrice]);
 
     const handleStartBooking = () => {
-      router.push(`/booking?service=${serviceSlug}&propertyType=${propertyType}&bedrooms=${bedrooms}&bathrooms=${bathrooms}&sqm=${sqm}`);
+      router.push(`/booking?service=${serviceSlug}&propertyType=${propertyType}&bedrooms=${bedrooms}&bathrooms=${bathrooms}&sqm=${sqm}&step=2`);
     };
   return (
     <div className="flex flex-col lg:flex-row gap-10 items-start text-left max-w-[1200px] mx-auto w-full font-sans">
@@ -189,8 +193,8 @@ export const EndOfLeaseCalculator: React.FC<{ serviceSlug?: string, basePrice?: 
                
                <div className="mb-8">
                   <p className="text-xs text-slate-500 mb-2 uppercase tracking-widest font-semibold flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px] text-primary">analytics</span>
-                    AI Computed Range
+                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    Monte Carlo AI Range
                   </p>
                   
                   <div className="text-5xl font-black text-white tracking-tighter flex items-baseline gap-2 mb-3">
@@ -198,6 +202,38 @@ export const EndOfLeaseCalculator: React.FC<{ serviceSlug?: string, basePrice?: 
                      <motion.span key={priceRange.min} initial={{ y: -5, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>{priceRange.min}</motion.span>
                      <span className="text-2xl font-bold text-slate-600 mx-1">-</span>
                      <span className="text-2xl font-bold text-slate-400">${priceRange.max}</span>
+                  </div>
+
+                  {/* Monte Carlo Visualizer */}
+                  <div className="space-y-4 mb-8 mt-6">
+                    <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                      <span>Base Rate</span>
+                      <span className="text-white">${basePrice}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                      <motion.div 
+                        className="h-full bg-primary" 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(100, (basePrice / priceRange.max) * 100)}%` }}
+                        transition={{ duration: 0.5 }}
+                      />
+                    </div>
+                    
+                    <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 mt-4">
+                      <span>Node Variance (Monte Carlo)</span>
+                      <span className="text-secondary">+${priceRange.min - basePrice} - +${priceRange.max - basePrice}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex relative">
+                      <motion.div 
+                        className="h-full bg-secondary absolute top-0" 
+                        initial={{ width: 0, left: 0 }}
+                        animate={{ 
+                          width: `${Math.min(100, ((priceRange.max - priceRange.min) / priceRange.max) * 100)}%`,
+                          left: `${Math.min(100, (priceRange.min / priceRange.max) * 100)}%` 
+                        }}
+                        transition={{ duration: 0.5 }}
+                      />
+                    </div>
                   </div>
                   
                   <p className="text-[11px] text-primary/60 font-medium leading-relaxed">
