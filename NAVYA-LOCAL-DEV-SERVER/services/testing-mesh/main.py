@@ -1,4 +1,10 @@
+import sys
+import os
 from fastapi import FastAPI
+
+# Add project root to sys.path to resolve 'packages' module
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+
 from packages.core.engine import SuperAgentHarness
 
 app = FastAPI(title="Testing Mesh")
@@ -15,4 +21,4 @@ def run_test(task: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8081)
