@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:../../mythos.db"
 }
 
 model Service {
@@ -42,7 +42,7 @@ model Booking {
   stateCode    String
   enterpriseClient EnterpriseClient? @relation(fields: [enterpriseClientId], references: [id])
   enterpriseClientId String?
-  mythosData   Json?    // Store the 2026 specific metadata (Karpathy Pattern)
+  mythosData   String?  // Store the 2026 specific metadata (Karpathy Pattern)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -51,7 +51,7 @@ model EnterpriseClient {
   id          String    @id @default(cuid())
   name        String
   type        String    // NDIS, REAL_ESTATE, BUSINESS
-  contactInfo Json
+  contactInfo String
   apiId       String?   @unique
   bookings    Booking[]
   createdAt   DateTime  @default(now())
@@ -61,7 +61,7 @@ model EnterpriseClient {
 model AuditLog {
   id        String   @id @default(cuid())
   action    String
-  details   Json
+  details   String
   timestamp DateTime @default(now())
 }
 
@@ -80,6 +80,81 @@ model Flashcard {
 model SiteConfig {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     Json
+  value     String
   updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  passwordHash String  // In production, use proper hashing (bcrypt)
+  role        String   @default("admin") // admin, editor, viewer
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PageContent {
+  id          String   @id @default(cuid())
+  page        String   // "home", "services", "pricing", "booking", "compliance", etc.
+  section     String   // "hero", "quote", "enterprise", "footer", etc.
+  key         String   // "title", "subtitle", "description", "imageUrl", etc.
+  value       String
+  locale      String   @default("en")
+  updatedAt   DateTime @updatedAt
+
+  @@unique([page, section, key, locale])
+}
+
+model Media {
+  id          String   @id @default(cuid())
+  url         String
+  alt         String   @default("")
+  type        String   // "image", "video", "icon", "logo"
+  page        String   @default("") // which page uses it
+  size        Int      @default(0) // bytes
+  uploadedAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdCampaign {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @default("")
+  imageUrl    String
+  linkUrl     String   @default("")
+  startDate   DateTime
+  endDate     DateTime?
+  budget      Float    @default(0)
+  spent       Float    @default(0)
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  isActive    Boolean  @default(true)
+  targetPages String?  // JSON string
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AnalyticsConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique // "gtmId", "gaId", "vercelEnabled", etc.
+  value       String
+  isActive    Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  role        String   @default("customer")
+  company     String   @default("")
+  rating      Int      @default(5)
+  content     String
+  imageUrl    String   @default("")
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
