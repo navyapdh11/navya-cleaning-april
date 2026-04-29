@@ -1,14 +1,15 @@
 services:
   - type: web
     name: march-cleaning
+    rootDirectory: cleaning-services-website
     env: node
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+    buildCommand: cd cleaning-services-website && npm install && npm run build
+    startCommand: cd cleaning-services-website && npm run start
     autoDeploy: true
     envVars:
       - key: NODE_VERSION
-        value: 22.0.0
+        value: "22"
       - key: NEXT_TELEMETRY_DISABLED
         value: "1"
       - key: DB_PATH
