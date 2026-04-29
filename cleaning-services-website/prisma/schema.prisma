@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./mythos.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Service {
@@ -42,7 +42,7 @@ model Booking {
   stateCode    String
   enterpriseClient EnterpriseClient? @relation(fields: [enterpriseClientId], references: [id])
   enterpriseClientId String?
-  mythosData   String?  // Store the 2026 specific metadata (Karpathy Pattern)
+  mythosData   Json?    // Store the 2026 specific metadata (Karpathy Pattern)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -51,7 +51,7 @@ model EnterpriseClient {
   id          String    @id @default(cuid())
   name        String
   type        String    // NDIS, REAL_ESTATE, BUSINESS
-  contactInfo String
+  contactInfo Json
   apiId       String?   @unique
   bookings    Booking[]
   createdAt   DateTime  @default(now())
@@ -61,7 +61,7 @@ model EnterpriseClient {
 model AuditLog {
   id        String   @id @default(cuid())
   action    String
-  details   String
+  details   Json
   timestamp DateTime @default(now())
 }
 
@@ -80,7 +80,7 @@ model Flashcard {
 model SiteConfig {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     String
+  value     Json
   updatedAt DateTime @updatedAt
 }
 
@@ -100,7 +100,7 @@ model PageContent {
   page        String   // "home", "services", "pricing", "booking", "compliance", etc.
   section     String   // "hero", "quote", "enterprise", "footer", etc.
   key         String   // "title", "subtitle", "description", "imageUrl", etc.
-  value       String
+  value       String   @db.Text
   locale      String   @default("en")
   updatedAt   DateTime @updatedAt
 
@@ -131,7 +131,7 @@ model AdCampaign {
   impressions Int      @default(0)
   clicks      Int      @default(0)
   isActive    Boolean  @default(true)
-  targetPages String?  // JSON string
+  targetPages Json?    // which pages to show on
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -150,7 +150,7 @@ model Testimonial {
   role        String   @default("customer")
   company     String   @default("")
   rating      Int      @default(5)
-  content     String
+  content     String   @db.Text
   imageUrl    String   @default("")
   isFeatured  Boolean  @default(false)
   isActive    Boolean  @default(true)

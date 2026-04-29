@@ -66,7 +66,7 @@ export async function POST(request: Request) {
           date: new Date(date || Date.now()), status: 'SCHEDULED',
           service: { connect: { slug: service.slug } },
           state: { connect: { code: stateCode || 'NSW' } },
-          enterpriseClientId: enterpriseClientId || null, mythosData: JSON.stringify(mythosData)
+          enterpriseClientId: enterpriseClientId || null, mythosData: mythosData as any
         }
       });
 
@@ -100,9 +100,9 @@ export async function POST(request: Request) {
     // ─── Site Config ───
     if (action === 'update_config') {
       const { key, value } = payload;
-      const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+      const jsonValue = typeof value === 'string' ? value : JSON.stringify(value);
       const config = await prisma.siteConfig.upsert({
-        where: { key }, update: { value: stringValue }, create: { key, value: stringValue }
+        where: { key }, update: { value: jsonValue }, create: { key, value: jsonValue }
       });
       return NextResponse.json({ success: true, config });
     }
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
       const configs = await prisma.siteConfig.findMany();
       const result: Record<string, any> = {};
       for (const c of configs) {
-        try { result[c.key] = JSON.parse(c.value); } catch { result[c.key] = c.value; }
+        try { result[c.key] = JSON.parse(c.value as string); } catch { result[c.key] = c.value; }
       }
       return NextResponse.json({ configs: result });
     }
@@ -210,8 +210,8 @@ export async function POST(request: Request) {
       const tp = typeof targetPages === 'string' ? targetPages : JSON.stringify(targetPages || []);
       const ad = await prisma.adCampaign.upsert({
         where: { id: id || 'new' },
-        update: { name, description, imageUrl, linkUrl, startDate: new Date(startDate), endDate: endDate ? new Date(endDate) : null, budget, isActive, targetPages: tp },
-        create: { name, description, imageUrl, linkUrl, startDate: new Date(startDate), endDate: endDate ? new Date(endDate) : null, budget: budget || 0, isActive: isActive ?? true, targetPages: tp }
+        update: { name, description, imageUrl, linkUrl, startDate: new Date(startDate), endDate: endDate ? new Date(endDate) : null, budget, isActive, targetPages: tp as any },
+        create: { name, description, imageUrl, linkUrl, startDate: new Date(startDate), endDate: endDate ? new Date(endDate) : null, budget: budget || 0, isActive: isActive ?? true, targetPages: tp as any }
       });
       return NextResponse.json({ success: true, ad });
     }
