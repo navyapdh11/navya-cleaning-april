@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SERVICES, STATES } from '@/lib/data';
@@ -11,196 +11,190 @@ export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const toggleDropdown = (name: string) => {
-    if (activeDropdown === name) setActiveDropdown(null);
-    else setActiveDropdown(name);
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Services', path: '/services' },
     { name: 'Pricing', path: '/pricing' },
     { name: 'Compliance', path: '/compliance' },
   ];
 
+  const dropdownVariants = {
+    hidden: { opacity: 0, y: 8, scale: 0.98 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const } },
+    exit: { opacity: 0, y: 4, scale: 0.98, transition: { duration: 0.15 } },
+  };
+
   return (
-    <nav className="glass" style={{ 
-      margin: '1rem 2rem', 
-      padding: '0.8rem 2rem', 
-      borderRadius: '24px', 
-      display: 'flex', 
-      justifyContent: 'space-between', 
-      alignItems: 'center',
-      position: 'sticky',
-      top: '20px',
-      zIndex: 1000
-    }}>
-      {/* Brand */}
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-        <div style={{ 
-          background: 'var(--primary)', 
-          width: '35px', 
-          height: '35px', 
-          borderRadius: '10px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          color: 'white'
-        }}>
-          <Shield size={20} />
-        </div>
-        <div style={{ fontWeight: '900', fontSize: '1.4rem', letterSpacing: '-1.5px', color: 'rgb(var(--foreground-rgb))' }}>
-          NAVYA <span style={{ color: 'var(--primary)' }}>MYTHOS</span>
-        </div>
-      </Link>
-      
-      {/* Desktop Navigation */}
-      <div style={{ display: 'none', gap: '2.5rem', alignItems: 'center' }} className="desktop-nav">
-        {navLinks.map((link) => (
-          <Link 
-            key={link.path} 
-            href={link.path}
-            style={{ 
-              fontWeight: '700', 
-              fontSize: '0.9rem',
-              opacity: pathname === link.path ? 1 : 0.6,
-              color: pathname === link.path ? 'var(--primary)' : 'inherit',
-              transition: 'all 0.2s'
-            }}
-          >
-            {link.name}
+    <>
+      <nav
+        className="navbar"
+        role="navigation"
+        aria-label="Main navigation"
+        data-scrolled={isScrolled}
+      >
+        <div className="navbar-container">
+          {/* Brand */}
+          <Link href="/" className="navbar-brand" aria-label="NAVYA MYTHOS Home">
+            <div className="brand-icon">
+              <Shield size={20} strokeWidth={2.5} />
+            </div>
+            <span className="brand-text">
+              NAVYA <span className="brand-accent">MYTHOS</span>
+            </span>
           </Link>
-        ))}
 
-        {/* Services Dropdown */}
-        <div 
-          style={{ position: 'relative' }}
-          onMouseEnter={() => setActiveDropdown('services')}
-          onMouseLeave={() => setActiveDropdown(null)}
-        >
-          <button style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '700', fontSize: '0.9rem', opacity: 0.6 }}>
-            Services <ChevronDown size={14} />
-          </button>
-          <AnimatePresence>
-            {activeDropdown === 'services' && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="glass"
-                style={{ 
-                  position: 'absolute', top: '100%', left: '-50%', width: '450px', 
-                  padding: '1.5rem', marginTop: '1rem', borderRadius: '24px',
-                  display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'
-                }}
+          {/* Desktop Navigation */}
+          <div className="desktop-nav">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                href={link.path}
+                className={`nav-link ${pathname === link.path ? 'nav-link-active' : ''}`}
+                aria-current={pathname === link.path ? 'page' : undefined}
               >
-                {SERVICES.map((s) => (
-                  <Link 
-                    key={s.slug} 
-                    href={`/services/${s.slug}`}
-                    style={{ 
-                      padding: '0.8rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.2rem',
-                      background: 'rgba(255,255,255,0.05)', transition: 'background 0.2s'
-                    }}
-                    className="nav-item-hover"
+                {link.name}
+              </Link>
+            ))}
+
+            {/* Services Dropdown */}
+            <div
+              className="nav-dropdown"
+              ref={dropdownRef}
+              onMouseEnter={() => setActiveDropdown('services')}
+              onMouseLeave={() => setActiveDropdown(null)}
+            >
+              <button
+                className={`nav-link nav-dropdown-trigger ${activeDropdown === 'services' ? 'nav-link-active' : ''}`}
+                aria-expanded={activeDropdown === 'services'}
+                aria-haspopup="true"
+              >
+                Locations
+                <ChevronDown size={14} strokeWidth={2.5} className={`nav-chevron ${activeDropdown === 'locations' ? 'nav-chevron-open' : ''}`} />
+              </button>
+              <AnimatePresence>
+                {activeDropdown === 'locations' && (
+                  <motion.div
+                    variants={dropdownVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="nav-dropdown-menu"
+                    role="menu"
                   >
-                    <span style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>{s.name}</span>
-                    <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{s.category}</span>
-                  </Link>
-                ))}
-                <Link 
-                  href="/admin"
-                  style={{ 
-                    padding: '0.8rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.2rem',
-                    background: 'rgba(0, 112, 243, 0.1)', border: '1px solid var(--primary)', transition: 'background 0.2s',
-                    gridColumn: 'span 2'
-                  }}
-                  className="nav-item-hover"
+                    {STATES.map((state) => (
+                      <Link
+                        key={state.code}
+                        href={`/locations/${state.code.toLowerCase()}`}
+                        className="nav-dropdown-item"
+                        role="menuitem"
+                      >
+                        <Globe size={14} strokeWidth={2} />
+                        {state.name}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* CTA & Mobile Toggle */}
+          <div className="navbar-actions">
+            <Link href="/booking" className="navbar-cta">
+              Direct Dispatch
+            </Link>
+            <button
+              className="mobile-toggle"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            className="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+          >
+            <div className="mobile-menu-content">
+              {[...navLinks, { name: 'Locations', path: '/locations/nsw' }].map((link) => (
+                <Link
+                  key={link.path}
+                  href={link.path}
+                  className={`mobile-nav-link ${pathname === link.path ? 'mobile-nav-link-active' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--primary)' }}>Admin Center</span>
-                  <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>Full Network & CMS Control</span>
+                  {link.name}
                 </Link>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Locations Dropdown */}
-        <div 
-          style={{ position: 'relative' }}
-          onMouseEnter={() => setActiveDropdown('locations')}
-          onMouseLeave={() => setActiveDropdown(null)}
-        >
-          <button style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '700', fontSize: '0.9rem', opacity: 0.6 }}>
-            Locations <ChevronDown size={14} />
-          </button>
-          <AnimatePresence>
-            {activeDropdown === 'locations' && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="glass"
-                style={{ 
-                  position: 'absolute', top: '100%', left: '-150%', width: '250px', 
-                  padding: '1rem', marginTop: '1rem', borderRadius: '20px',
-                  display: 'grid', gridTemplateColumns: '1fr', gap: '0.5rem'
-                }}
+              ))}
+              <div className="mobile-dropdown-section">
+                <span className="mobile-dropdown-label">Locations</span>
+                <div className="mobile-dropdown-grid">
+                  {STATES.map((state) => (
+                    <Link
+                      key={state.code}
+                      href={`/locations/${state.code.toLowerCase()}`}
+                      className="mobile-location-chip"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {state.code}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              <Link
+                href="/booking"
+                className="mobile-cta-button"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                {STATES.map((state) => (
-                  <Link 
-                    key={state.code} 
-                    href={`/locations/${state.code.toLowerCase()}`}
-                    style={{ 
-                      padding: '0.6rem 1rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 'bold',
-                      background: 'rgba(255,255,255,0.05)'
-                    }}
-                  >
-                    {state.name}
-                  </Link>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <Link href="/booking" className="glass" style={{ 
-          padding: '0.7rem 1.5rem', 
-          borderRadius: '14px', 
-          fontSize: '0.85rem', 
-          fontWeight: '900',
-          background: 'var(--primary)',
-          color: 'white',
-          border: 'none',
-          boxShadow: '0 4px 15px rgba(0, 112, 243, 0.3)'
-        }}>
-          Direct Dispatch
-        </Link>
-        
-        {/* Mobile Toggle */}
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          style={{ display: 'flex', opacity: 0.6 }}
-        >
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </button>
-      </div>
-
-      <style jsx>{`
-        @media (min-width: 768px) {
-          .desktop-nav {
-            display: flex !important;
-          }
-        }
-        .nav-item-hover:hover {
-          background: rgba(255,255,255,0.1) !important;
-          transform: translateY(-2px);
-        }
-      `}</style>
-    </nav>
+                Initialize Dispatch
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
