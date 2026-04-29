@@ -23,6 +23,21 @@ import {
   Check
 } from 'lucide-react';
 import { SERVICES, STATES, ServiceData, Addon } from '@/lib/data';
+
+// Map API service shape to ServiceData (add-ons/features come from fallback)
+function mapApiService(apiSvc: any): ServiceData {
+  const fallback = SERVICES.find(s => s.slug === apiSvc.slug);
+  return {
+    slug: apiSvc.slug,
+    name: apiSvc.name,
+    description: apiSvc.description,
+    basePrice: apiSvc.basePrice ?? fallback?.basePrice ?? 0,
+    category: (apiSvc.category as 'Residential' | 'Enterprise') || fallback?.category || 'Residential',
+    features: fallback?.features ?? [],
+    addons: fallback?.addons ?? [],
+  };
+}
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BookingState {
@@ -58,9 +73,47 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
   const initBathrooms = parseInt(searchParams.get('bathrooms') || '1', 10);
   const initSqm = parseInt(searchParams.get('sqm') || '85', 10);
 
-  const [service, setService] = useState<ServiceData>(
-    SERVICES.find(s => s.slug === initialService) || SERVICES[0]
-  );
+  const [availableServices, setAvailableServices] = useState<ServiceData[]>([]);
+  const [loadingServices, setLoadingServices] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+
+  const [service, setService] = useState<ServiceData | null>(null);
+
+  // Fetch services from API on mount, fall back to lib/data.ts
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchServices() {
+      try {
+        const res = await fetch('/api/mythos?resource=services');
+        if (res.ok) {
+          const json = await res.json();
+          const mapped: ServiceData[] = (json.services || []).map(mapApiService);
+          if (mapped.length > 0 && !cancelled) {
+            setAvailableServices(mapped);
+            const svc = mapped.find((s: ServiceData) => s.slug === initialService) || mapped[0];
+            setService(svc);
+            setLoadingServices(false);
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch services from API, falling back to local data:', e);
+      }
+      // Fallback to hardcoded data
+      if (!cancelled) {
+        setAvailableServices(SERVICES);
+        const svc = SERVICES.find(s => s.slug === initialService) || SERVICES[0];
+        setService(svc);
+        setLoadingServices(false);
+      }
+    }
+    fetchServices();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   const [booking, setBooking] = useState<BookingState>({
     step: 1,
@@ -89,10 +142,11 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
+    if (!service) return;
     let price = service.basePrice;
     price += (booking.bedrooms - 1) * 30;
     price += (booking.bathrooms - 1) * 20;
-    
+
     service.addons.forEach(addon => {
       const qty = booking.addons[addon.id] || 0;
       price += qty * addon.price;
@@ -114,6 +168,41 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
   const nextStep = () => setBooking(prev => ({ ...prev, step: prev.step + 1 }));
   const prevStep = () => setBooking(prev => ({ ...prev, step: prev.step - 1 }));
 
+  const handleSubmitBooking = async () => {
+    if (!service) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/mythos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'schedule',
+          payload: {
+            facilityName: booking.address || `${booking.firstName} ${booking.lastName}`,
+            sqft: booking.sqm,
+            date: booking.date || new Date().toISOString(),
+            serviceSlug: service.slug,
+            stateCode: booking.state || 'NSW',
+            enterpriseClientId: booking.email || null,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBookingId(data.bookingId || null);
+        setSubmitted(true);
+      } else {
+        console.error('Booking failed:', data.error || data.message);
+        alert('Booking failed. Please try again.');
+      }
+    } catch (e) {
+      console.error('Error submitting booking:', e);
+      alert('An error occurred while submitting your booking.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const steps = [
     { title: 'Details', icon: <Layout size={18} /> },
     { title: 'Schedule', icon: <Calendar size={18} /> },
@@ -124,7 +213,16 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-x-12 gap-y-8 items-start w-full max-w-[1400px] mx-auto">
-      
+
+      {!service && (
+        <div className="xl:col-start-1 xl:col-span-2 flex items-center justify-center py-32">
+          <div className="text-center">
+            <div className="h-12 w-12 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-400">Syncing service nodes...</p>
+          </div>
+        </div>
+      )}
+
       {/* Stepper */}
       <nav className="px-2 sm:px-4 xl:col-start-1 w-full order-1">
         <ol className="flex items-start w-full justify-between">
@@ -198,7 +296,7 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
                 </div>
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  {service.addons.map(addon => (
+                  {service?.addons.map(addon => (
                     <div key={addon.id} className="glass p-6 rounded-[24px] flex flex-col justify-between">
                        <div className="flex justify-between items-start mb-4 gap-4">
                           <div>
@@ -308,20 +406,45 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
               </motion.div>
             )}
 
-            {booking.step === 5 && (
+            {booking.step === 5 && !submitted && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8 text-center">
                  <div className="glass p-12 rounded-[48px] border-primary/40">
                     <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
                        <CheckCircle2 size={48} className="text-primary" />
                     </div>
                     <h2 className="text-3xl font-black mb-4">Transmission Ready</h2>
-                    <p className="text-slate-400 mb-8 max-w-md mx-auto">Confirm your dispatch request for {service.name}. AEO-verification will initialize upon confirmation.</p>
+                    <p className="text-slate-400 mb-8 max-w-md mx-auto">Confirm your dispatch request for {service?.name}. AEO-verification will initialize upon confirmation.</p>
                     <div className="glass p-6 rounded-3xl text-left mb-8 max-w-lg mx-auto bg-white/5">
                        <div className="flex justify-between mb-2"><span>Facility</span><span className="font-bold">{booking.address || 'Draft Node'}</span></div>
                        <div className="flex justify-between mb-2"><span>Dispatch Date</span><span className="font-bold">{booking.date || 'Pending'}</span></div>
                        <div className="flex justify-between"><span>Total Investment</span><span className="font-bold text-primary text-xl">${totalPrice}</span></div>
                     </div>
-                    <button className="btn-primary px-12 py-5 rounded-2xl text-xl font-black w-full max-w-lg">AUTHORIZE DISPATCH</button>
+                    <button
+                      onClick={handleSubmitBooking}
+                      disabled={submitting}
+                      className="btn-primary px-12 py-5 rounded-2xl text-xl font-black w-full max-w-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {submitting ? 'TRANSMITTING...' : 'AUTHORIZE DISPATCH'}
+                    </button>
+                 </div>
+              </motion.div>
+            )}
+
+            {submitted && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8 text-center">
+                 <div className="glass p-12 rounded-[48px] border-secondary/40">
+                    <div className="w-20 h-20 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                       <CheckCircle2 size={48} className="text-secondary" />
+                    </div>
+                    <h2 className="text-3xl font-black mb-4">Dispatch Authorized</h2>
+                    <p className="text-slate-400 mb-4 max-w-md mx-auto">Your sanitization fleet has been successfully scheduled. AEO-verification is now processing.</p>
+                    {bookingId && <p className="text-xs text-slate-500 mb-6">Booking ID: {bookingId}</p>}
+                    <div className="glass p-6 rounded-3xl text-left max-w-lg mx-auto bg-white/5">
+                       <div className="flex justify-between mb-2"><span>Facility</span><span className="font-bold">{booking.address || 'Draft Node'}</span></div>
+                       <div className="flex justify-between mb-2"><span>Dispatch Date</span><span className="font-bold">{booking.date || 'Pending'}</span></div>
+                       <div className="flex justify-between mb-2"><span>Service</span><span className="font-bold">{service?.name}</span></div>
+                       <div className="flex justify-between"><span>Total Investment</span><span className="font-bold text-primary text-xl">${totalPrice}</span></div>
+                    </div>
                  </div>
               </motion.div>
             )}
@@ -344,7 +467,7 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
                      <div className="p-2 bg-white/5 rounded-lg text-secondary"><Layout size={18} /></div>
                      <div>
                         <div className="text-[10px] text-slate-500 uppercase font-bold">Service Cluster</div>
-                        <div className="text-sm font-bold">{service.name}</div>
+                        <div className="text-sm font-bold">{service?.name}</div>
                      </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -359,11 +482,11 @@ export const MultiStepBooking: React.FC<{ initialService?: string }> = ({ initia
                <div className="h-px bg-white/5 w-full"></div>
 
                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between gap-4"><span className="text-slate-500">Base Investment</span><span className="font-bold whitespace-nowrap">${service.basePrice}</span></div>
+                  <div className="flex justify-between gap-4"><span className="text-slate-500">Base Investment</span><span className="font-bold whitespace-nowrap">${service?.basePrice}</span></div>
                   <div className="flex justify-between gap-4"><span className="text-slate-500 truncate">Node Scale ({booking.bedrooms}B / {booking.bathrooms}Ba)</span><span className="font-bold whitespace-nowrap">+${(booking.bedrooms-1)*30 + (booking.bathrooms-1)*20}</span></div>
                   
                   {Object.entries(booking.addons).map(([id, qty]) => {
-                    const addon = service.addons.find(a => a.id === id);
+                    const addon = service?.addons.find(a => a.id === id);
                     if (!addon || qty === 0) return null;
                     return (
                       <div key={id} className="flex justify-between items-center bg-white/5 p-2 rounded-lg gap-4">

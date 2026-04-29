@@ -1,12 +1,41 @@
 import React from 'react';
-import { SERVICES } from '@/lib/data';
 import Link from 'next/link';
-import { BentoGrid, BentoItem } from '@/components/InteractiveElements';
-import { CreditCard, Zap, Check } from 'lucide-react';
 
-export default function PricingPage() {
-  const residentialServices = SERVICES.filter(s => s.category === 'Residential');
-  const enterpriseServices = SERVICES.filter(s => s.category === 'Enterprise');
+interface Service {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  basePrice: number;
+  category: string;
+}
+
+async function getServices(): Promise<Service[]> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const res = await fetch(`${baseUrl}/api/mythos?resource=services`, {
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch services');
+  }
+
+  const data = await res.json();
+  return data.services || [];
+}
+
+export default async function PricingPage() {
+  let services: Service[] = [];
+  try {
+    services = await getServices();
+  } catch {
+    // If API fails, show empty state
+  }
+
+  const residentialServices = services.filter(s => s.category === 'Residential');
+  const enterpriseServices = services.filter(s => s.category === 'Enterprise');
+
+  const hasAnyServices = services.length > 0;
 
   return (
     <main style={{ minHeight: '100vh', padding: '6rem 2rem' }}>
@@ -20,68 +49,76 @@ export default function PricingPage() {
           </p>
         </header>
 
-        <section style={{ marginBottom: '6rem' }}>
-          <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center' }}>Residential <span style={{ color: 'var(--secondary)' }}>Solutions</span></h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-            {residentialServices.map((service) => (
-              <div key={service.slug} className="glass" style={{ padding: '2.5rem', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: 0, right: 0, padding: '1rem', background: 'var(--primary)', color: 'white', borderRadius: '0 0 0 24px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                  BEST VALUE
-                </div>
-                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{service.name}</h3>
-                <div style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '1.5rem', verticalAlign: 'top', opacity: 0.6 }}>$</span>{service.basePrice}
-                  <span style={{ fontSize: '1rem', opacity: 0.6 }}> / session</span>
-                </div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '2rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                  {service.features.map((f, i) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '0.9rem', opacity: 0.8 }}>
-                      <Check size={16} style={{ color: 'var(--primary)' }} /> {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link 
-                  href={`/booking?service=${service.slug}`}
-                  style={{ display: 'block', padding: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', textAlign: 'center', fontWeight: 'bold', border: '1px solid var(--glass-border)' }}
-                >
-                  Book Session
-                </Link>
-              </div>
-            ))}
+        {!hasAnyServices ? (
+          <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+            <p style={{ fontSize: '1.5rem', opacity: 0.7 }}>No services available at the moment.</p>
+            <p style={{ fontSize: '1rem', opacity: 0.5, marginTop: '1rem' }}>Please check back later.</p>
           </div>
-        </section>
+        ) : (
+          <>
+            {residentialServices.length > 0 && (
+              <section style={{ marginBottom: '6rem' }}>
+                <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center' }}>
+                  Residential <span style={{ color: 'var(--secondary)' }}>Solutions</span>
+                </h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                  {residentialServices.map((service) => (
+                    <div key={service.id || service.slug} className="glass" style={{ padding: '2.5rem', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+                      <div style={{ position: 'absolute', top: 0, right: 0, padding: '0.6rem 1rem', background: 'var(--secondary)', color: 'white', borderRadius: '0 0 0 24px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                        {service.category}
+                      </div>
+                      <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{service.name}</h3>
+                      <p style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '1rem', minHeight: '2.5rem' }}>
+                        {service.description}
+                      </p>
+                      <div style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1.5rem' }}>
+                        <span style={{ fontSize: '1.5rem', verticalAlign: 'top', opacity: 0.6 }}>$</span>{service.basePrice}
+                        <span style={{ fontSize: '1rem', opacity: 0.6 }}> / session</span>
+                      </div>
+                      <Link
+                        href={`/services/${service.slug}`}
+                        style={{ display: 'block', padding: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', textAlign: 'center', fontWeight: 'bold', border: '1px solid var(--glass-border)', textDecoration: 'none', color: 'inherit' }}
+                      >
+                        View Details
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
-        <section>
-          <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center' }}>Enterprise <span style={{ color: 'var(--primary)' }}>Partnerships</span></h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-            {enterpriseServices.map((service) => (
-              <div key={service.slug} className="glass" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--primary)' }}>
-                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{service.name}</h3>
-                <div style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>
-                   <span style={{ fontSize: '1.5rem', verticalAlign: 'top', opacity: 0.6 }}>$</span>{service.basePrice}
-                   <span style={{ fontSize: '1rem', opacity: 0.6 }}> / baseline</span>
-                </div>
-                <p style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '2rem' }}>Scalable volume-based pricing for national operations.</p>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '2rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                  {service.features.map((f, i) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '0.9rem', opacity: 0.8 }}>
-                      <Check size={16} style={{ color: 'var(--primary)' }} /> {f}
-                    </li>
+            {enterpriseServices.length > 0 && (
+              <section style={{ marginBottom: '6rem' }}>
+                <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center' }}>
+                  Enterprise <span style={{ color: 'var(--primary)' }}>Partnerships</span>
+                </h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                  {enterpriseServices.map((service) => (
+                    <div key={service.id || service.slug} className="glass" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--primary)' }}>
+                      <div style={{ display: 'inline-block', padding: '0.4rem 0.8rem', background: 'var(--primary)', color: 'white', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '1rem', textTransform: 'uppercase' }}>
+                        {service.category}
+                      </div>
+                      <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{service.name}</h3>
+                      <p style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '1rem', minHeight: '2.5rem' }}>
+                        {service.description}
+                      </p>
+                      <div style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1.5rem' }}>
+                        <span style={{ fontSize: '1.5rem', verticalAlign: 'top', opacity: 0.6 }}>$</span>{service.basePrice}
+                        <span style={{ fontSize: '1rem', opacity: 0.6 }}> / baseline</span>
+                      </div>
+                      <Link
+                        href={`/services/${service.slug}`}
+                        style={{ display: 'block', padding: '1rem', borderRadius: '12px', background: 'var(--primary)', color: 'white', textAlign: 'center', fontWeight: 'bold', textDecoration: 'none' }}
+                      >
+                        View Details
+                      </Link>
+                    </div>
                   ))}
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '0.9rem', opacity: 0.8 }}>
-                    <Zap size={16} style={{ color: 'var(--accent)' }} /> Priority Dispatch
-                  </li>
-                </ul>
-                <Link 
-                  href={`/booking?service=${service.slug}`}
-                  style={{ display: 'block', padding: '1rem', borderRadius: '12px', background: 'var(--primary)', color: 'white', textAlign: 'center', fontWeight: 'bold' }}
-                >
-                  Open Corporate Account
-                </Link>
-              </div>
-            ))}
-          </div>
-        </section>
+                </div>
+              </section>
+            )}
+          </>
+        )}
 
         <footer style={{ marginTop: '6rem', textAlign: 'center' }}>
           <div className="glass" style={{ padding: '3rem', borderRadius: '32px', maxWidth: '800px', margin: '0 auto' }}>

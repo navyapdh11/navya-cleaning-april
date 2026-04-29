@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
@@ -7,9 +8,210 @@ import { BentoGrid, BentoItem, FlashCard } from "@/components/InteractiveElement
 import { DynamicQuoting } from "@/components/DynamicQuoting";
 import { CROEngine } from "@/lib/cro-engine";
 import { SERVICES, STATES } from "@/lib/data";
-import { Shield, Zap, Globe, Users, Building2, Briefcase, ArrowRight } from 'lucide-react';
+import { Shield, Zap, Globe, Users, Building2, Briefcase, ArrowRight, Star } from 'lucide-react';
+
+// ─── Types ───
+
+interface FlashcardData {
+  id: string;
+  title: string;
+  content: string;
+  icon: string;
+  category: string;
+  isActive: boolean;
+  order: number;
+}
+
+interface TestimonialData {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  rating: number;
+  content: string;
+  imageUrl: string | null;
+  isFeatured: boolean;
+  isActive: boolean;
+}
+
+interface PageContentEntry {
+  id: string;
+  page: string;
+  section: string;
+  key: string;
+  value: string;
+}
+
+interface SiteConfig {
+  siteTitle?: string;
+  phone?: string;
+  email?: string;
+  [key: string]: unknown;
+}
+
+// ─── Helper: build a lookup map from PageContent entries ───
+
+function contentMap(entries: PageContentEntry[]): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const e of entries) {
+    map[`${e.section}.${e.key}`] = e.value;
+  }
+  return map;
+}
+
+// ─── Star Rating Component ───
+
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div style={{ display: 'flex', gap: '2px', color: 'var(--primary)' }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Star
+          key={i}
+          size={18}
+          fill={i <= rating ? 'currentColor' : 'none'}
+          strokeWidth={1.5}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── FlashCard Component with 3D tilt ───
+
+function TiltCard({ card }: { card: FlashcardData }) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * -20;
+    setTilt({ x, y });
+  };
+
+  return (
+    <div
+      className="glass"
+      style={{
+        padding: 'var(--space-8)',
+        borderRadius: 'var(--radius-xl)',
+        transform: isHovered
+          ? `perspective(1000px) rotateY(${tilt.x}deg) rotateX(${tilt.y}deg) scale(1.02)`
+          : 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale(1)',
+        transition: 'transform 0.15s ease-out',
+        cursor: 'default',
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => { setIsHovered(false); setTilt({ x: 0, y: 0 }); }}
+    >
+      <div style={{ fontSize: '2rem', marginBottom: 'var(--space-4)' }}>
+        {card.icon || '🧹'}
+      </div>
+      <h3 style={{
+        fontSize: 'var(--text-lg)',
+        fontWeight: '700',
+        marginBottom: 'var(--space-3)',
+      }}>
+        {card.title}
+      </h3>
+      <p style={{
+        color: 'var(--foreground-secondary)',
+        fontSize: 'var(--text-sm)',
+        lineHeight: 'var(--leading-relaxed)',
+      }}>
+        {card.content}
+      </p>
+      {card.category && (
+        <span
+          style={{
+            display: 'inline-block',
+            marginTop: 'var(--space-4)',
+            padding: '4px 12px',
+            borderRadius: '999px',
+            fontSize: 'var(--text-xs)',
+            background: 'rgba(124, 58, 237, 0.15)',
+            color: 'var(--secondary)',
+          }}
+        >
+          {card.category}
+        </span>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Page ───
 
 export default function Home() {
+  // Dynamic state
+  const [flashcards, setFlashcards] = useState<FlashcardData[]>([]);
+  const [testimonials, setTestimonials] = useState<TestimonialData[]>([]);
+  const [pageContent, setPageContent] = useState<PageContentEntry[]>([]);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch all data on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [flashcardsRes, testimonialsRes, pageContentRes, configRes] = await Promise.all([
+          fetch('/api/mythos?resource=flashcards'),
+          fetch('/api/mythos?resource=testimonials'),
+          fetch('/api/mythos?action=get_page_content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get_page_content', payload: { page: 'home' } }),
+          }),
+          fetch('/api/mythos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get_config' }),
+          }),
+        ]);
+
+        if (flashcardsRes.ok) {
+          const data = await flashcardsRes.json();
+          setFlashcards((data.flashcards || []).filter((fc: FlashcardData) => fc.isActive));
+        }
+
+        if (testimonialsRes.ok) {
+          const data = await testimonialsRes.json();
+          setTestimonials((data.testimonials || []).filter((t: TestimonialData) => t.isActive));
+        }
+
+        if (pageContentRes.ok) {
+          const data = await pageContentRes.json();
+          setPageContent(data.contents || []);
+        }
+
+        if (configRes.ok) {
+          const data = await configRes.json();
+          setSiteConfig(data.configs || {});
+        }
+      } catch (err) {
+        console.error('Failed to fetch homepage data:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Resolve page content values with fallbacks
+  const content = contentMap(pageContent);
+  const heroTitle = content['hero.title'] || 'Next-Gen <span class="text-gradient">Sanitization</span>';
+  const heroSubtitle = content['hero.subtitle'] || 'Enterprise-grade hygiene powered by autonomous systems, national-scale logistics, and self-learning optimization for the 2026 market.';
+  const heroBadge = content['hero.badge'] || "Australia's First AEO-Verified Sanitization Network";
+  const heroCtaPrimary = content['hero.cta_primary'] || 'Initialize Dispatch';
+  const heroCtaSecondary = content['hero.cta_secondary'] || 'View Pricing';
+  const portalsTitle = content['portals.title'] || 'Enterprise <span class="text-gradient-accent">Access</span> Portals';
+  const portalsSubtitle = content['portals.subtitle'] || 'Specialized compliance and dispatch systems for every sector.';
+  const coverageTitle = content['coverage.title'] || 'National <span class="text-gradient">Infrastructure</span>';
+  const coverageSubtitle = content['coverage.subtitle'] || 'Active nodes and AEO compliance monitoring across all Australian territories.';
+  const bentoTitle = content['bento.title'] || 'Enterprise <span class="text-gradient">Core</span> Capabilities';
+
   const handleLaunchQuote = () => {
     CROEngine.getInstance().trackEngagement('click_cta', { location: 'hero' });
   };
@@ -28,28 +230,31 @@ export default function Home() {
           }}>
             <div className="hero-badge">
               <span className="badge-indicator"></span>
-              Australia&apos;s First AEO-Verified Sanitization Network
+              {heroBadge}
             </div>
 
-            <h1 style={{
-              fontSize: 'var(--text-5xl)',
-              lineHeight: 'var(--leading-tight)',
-              marginBottom: 'var(--space-8)',
-              fontWeight: '900',
-              letterSpacing: 'var(--tracking-tighter)',
-            }}>
-              Next-Gen <span className="text-gradient">Sanitization</span>
-            </h1>
+            <h1
+              style={{
+                fontSize: 'var(--text-5xl)',
+                lineHeight: 'var(--leading-tight)',
+                marginBottom: 'var(--space-8)',
+                fontWeight: '900',
+                letterSpacing: 'var(--tracking-tighter)',
+              }}
+              dangerouslySetInnerHTML={{ __html: heroTitle }}
+            />
 
-            <p style={{
-              fontSize: 'var(--text-xl)',
-              color: 'var(--foreground-secondary)',
-              marginBottom: 'var(--space-12)',
-              maxWidth: '720px',
-              margin: '0 auto var(--space-12) auto',
-              lineHeight: 'var(--leading-relaxed)',
-            }}>
-              Enterprise-grade hygiene powered by autonomous systems, national-scale logistics, and self-learning optimization for the 2026 market.
+            <p
+              style={{
+                fontSize: 'var(--text-xl)',
+                color: 'var(--foreground-secondary)',
+                marginBottom: 'var(--space-12)',
+                maxWidth: '720px',
+                margin: '0 auto var(--space-12) auto',
+                lineHeight: 'var(--leading-relaxed)',
+              }}
+            >
+              {heroSubtitle}
             </p>
 
             <div className="hero-cta-group">
@@ -58,11 +263,11 @@ export default function Home() {
                 onClick={handleLaunchQuote}
                 className="btn btn-primary btn-lg"
               >
-                Initialize Dispatch
+                {heroCtaPrimary}
                 <ArrowRight size={20} strokeWidth={2.5} />
               </Link>
               <Link href="/pricing" className="btn btn-outline btn-lg">
-                View Pricing
+                {heroCtaSecondary}
               </Link>
             </div>
           </div>
@@ -76,8 +281,8 @@ export default function Home() {
       <section className="section">
         <div className="container">
           <div className="section-header">
-            <h2>Enterprise <span className="text-gradient-accent">Access</span> Portals</h2>
-            <p className="section-subtitle">Specialized compliance and dispatch systems for every sector.</p>
+            <h2 dangerouslySetInnerHTML={{ __html: portalsTitle }} />
+            <p className="section-subtitle">{portalsSubtitle}</p>
           </div>
 
           <div className="portal-grid">
@@ -121,8 +326,8 @@ export default function Home() {
       <section className="section" style={{ background: 'var(--background-subtle)' }}>
         <div className="container-sm">
           <div className="section-header">
-            <h2>National <span className="text-gradient">Infrastructure</span></h2>
-            <p className="section-subtitle">Active nodes and AEO compliance monitoring across all Australian territories.</p>
+            <h2 dangerouslySetInnerHTML={{ __html: coverageTitle }} />
+            <p className="section-subtitle">{coverageSubtitle}</p>
           </div>
           <div className="state-grid">
             {STATES.map((state) => (
@@ -142,7 +347,7 @@ export default function Home() {
       {/* Feature Bento Grid */}
       <section className="section">
         <div className="section-header">
-          <h2>Enterprise <span className="text-gradient">Core</span> Capabilities</h2>
+          <h2 dangerouslySetInnerHTML={{ __html: bentoTitle }} />
         </div>
         <BentoGrid>
           <BentoItem style={{ padding: 'var(--space-10)' }}>
@@ -169,21 +374,81 @@ export default function Home() {
         </BentoGrid>
       </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container-sm">
-          <div className="footer-brand">
-            NAVYA <span style={{ color: 'var(--primary)' }}>MYTHOS</span>
+      {/* Flashcards Bento Grid */}
+      {flashcards.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <div className="section-header">
+              <h2>Service <span className="text-gradient-accent">Highlights</span></h2>
+              <p className="section-subtitle">Explore our core capabilities and features.</p>
+            </div>
+            <div className="bento-grid">
+              {flashcards.map((card) => (
+                <TiltCard key={card.id} card={card} />
+              ))}
+            </div>
           </div>
-          <p className="footer-copy">&copy; 2026 NAVYA MYTHOS Enterprise Sanitization. Australian National Node 01.</p>
-          <nav className="footer-nav" aria-label="Footer navigation">
-            <Link href="/services/end-of-lease-cleaning">End of Lease</Link>
-            <Link href="/enterprise/ndis">NDIS Support</Link>
-            <Link href="/compliance">Compliance</Link>
-            <Link href="/pricing">Pricing</Link>
-          </nav>
-        </div>
-      </footer>
+        </section>
+      )}
+
+      {/* Testimonials Section */}
+      {testimonials.length > 0 && (
+        <section className="section" style={{ background: 'var(--background-subtle)' }}>
+          <div className="container">
+            <div className="section-header">
+              <h2>Client <span className="text-gradient">Testimonials</span></h2>
+              <p className="section-subtitle">What our partners say about the NAVYA MYTHOS experience.</p>
+            </div>
+            <div className="testimonial-grid">
+              {testimonials.map((t) => (
+                <div key={t.id} className="glass" style={{
+                  padding: 'var(--space-8)',
+                  borderRadius: 'var(--radius-xl)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--space-4)',
+                }}>
+                  <StarRating rating={t.rating} />
+                  <p style={{
+                    color: 'var(--foreground-secondary)',
+                    lineHeight: 'var(--leading-relaxed)',
+                    fontStyle: 'italic',
+                    flex: 1,
+                  }}>
+                    &ldquo;{t.content}&rdquo;
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                    {t.imageUrl && (
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        flexShrink: 0,
+                      }}>
+                        <Image
+                          src={t.imageUrl}
+                          alt={t.name}
+                          width={40}
+                          height={40}
+                          style={{ objectFit: 'cover' }}
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <div style={{ fontWeight: '600', fontSize: 'var(--text-sm)' }}>{t.name}</div>
+                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--foreground-muted)' }}>
+                        {t.role}{t.company ? ` at ${t.company}` : ''}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
     </main>
   );
 }

@@ -5,6 +5,8 @@ import "./globals.css";
 import { LocationBanner } from "@/components/LocationBanner";
 import { Navbar } from "@/components/Navbar";
 import { LeadCapture } from "@/components/marketing/LeadCapture";
+import { Footer } from "@/components/Footer";
+import { AdBanner } from "@/components/AdBanner";
 import { GoogleTagManager } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -36,18 +38,38 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+async function getGtmId(): Promise<string> {
+  try {
+    const res = await fetch('http://localhost:3000/api/mythos', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'get_config' }),
+      cache: 'force-cache',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.gtmId) return data.gtmId;
+    }
+  } catch {
+    // fall through
+  }
+  return process.env.NEXT_PUBLIC_GTM_ID || "GTM-XXXXXXX";
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gtmId = await getGtmId();
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
       <body>
-        <GoogleTagManager gtmId="GTM-XXXXXXX" />
+        <GoogleTagManager gtmId={gtmId} />
         <LocationBanner />
         <Navbar />
+        <AdBanner />
         {children}
+        <Footer />
         <LeadCapture />
         <Analytics />
       </body>

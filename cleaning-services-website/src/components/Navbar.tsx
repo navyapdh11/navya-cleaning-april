@@ -3,15 +3,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SERVICES, STATES } from '@/lib/data';
+import { STATES } from '@/lib/data';
 import { ChevronDown, Menu, X, Sparkles, Globe, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+interface SiteConfig {
+  siteTitle: string;
+  phone: string;
+  email: string;
+}
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
+  const [configLoading, setConfigLoading] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,11 +49,40 @@ export const Navbar: React.FC = () => {
     return () => { document.body.style.overflow = ''; };
   }, [isMobileMenuOpen]);
 
+  // Fetch site config on mount
+  useEffect(() => {
+    let mounted = true;
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/api/mythos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'get_config' }),
+        });
+        const data = await res.json();
+        if (mounted && data.configs) {
+          setSiteConfig(data.configs);
+        }
+      } catch {
+        // Silently fall back to default
+      } finally {
+        if (mounted) {
+          setConfigLoading(false);
+        }
+      }
+    };
+    fetchConfig();
+    return () => { mounted = false; };
+  }, []);
+
+  const brandName = siteConfig?.siteTitle || 'NAVYA MYTHOS';
+
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Services', path: '/services' },
     { name: 'Pricing', path: '/pricing' },
     { name: 'Compliance', path: '/compliance' },
+    { name: 'Locations', path: '/locations' },
   ];
 
   const dropdownVariants = {
@@ -64,12 +101,19 @@ export const Navbar: React.FC = () => {
       >
         <div className="navbar-container">
           {/* Brand */}
-          <Link href="/" className="navbar-brand" aria-label="NAVYA MYTHOS Home">
+          <Link href="/" className="navbar-brand" aria-label={`${brandName} Home`}>
             <div className="brand-icon">
               <Shield size={20} strokeWidth={2.5} />
             </div>
             <span className="brand-text">
-              NAVYA <span className="brand-accent">MYTHOS</span>
+              {brandName.split(' ').length > 1 ? (
+                <>
+                  {brandName.substring(0, brandName.lastIndexOf(' '))}{' '}
+                  <span className="brand-accent">{brandName.substring(brandName.lastIndexOf(' ') + 1)}</span>
+                </>
+              ) : (
+                brandName
+              )}
             </span>
           </Link>
 
