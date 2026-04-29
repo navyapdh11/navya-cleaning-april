@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:../../mythos.db"
+  url      = "file:./mythos.db"
 }
 
 model Service {

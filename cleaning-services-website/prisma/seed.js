@@ -74,6 +74,41 @@ async function main() {
   await prisma.siteConfig.upsert({ where: { key: 'phone' }, update: {}, create: { key: 'phone', value: '0426 532 177' } });
   await prisma.siteConfig.upsert({ where: { key: 'email' }, update: {}, create: { key: 'email', value: 'info@navyamythos.com.au' } });
 
+  // Seed testimonials
+  const testimonials = [
+    { id: 't-seed-sarah', name: 'Sarah Mitchell', role: 'Property Manager', company: 'Ray White NSW', rating: 5, content: 'NAVYA MYTHOS transformed our bond cleaning turnaround. 48-hour dispatch across Sydney with zero complaints. The AEO compliance logs are a game changer.', imageUrl: '', isFeatured: true, isActive: true, order: 0 },
+    { id: 't-seed-david', name: 'David Chen', role: 'Facilities Director', company: 'CBRE Melbourne', rating: 5, content: 'The enterprise portal lets us manage 12 sites from one dashboard. Compliance reporting used to take days — now its instant.', imageUrl: '', isFeatured: true, isActive: true, order: 1 },
+    { id: 't-seed-priya', name: 'Priya Sharma', role: 'NDIS Coordinator', company: 'Home Care Plus', rating: 4, content: 'Compassionate service that meets NDIS standards. The police-checked cleaners are thorough and the direct billing saves so much admin.', imageUrl: '', isFeatured: false, isActive: true, order: 2 }
+  ];
+  for (const t of testimonials) {
+    await prisma.testimonial.upsert({
+      where: { id: t.id },
+      update: {},
+      create: t
+    });
+    console.log(`✅ Testimonial: ${t.name}`);
+  }
+
+  // Seed ad campaign
+  await prisma.adCampaign.upsert({
+    where: { id: 'ad-seed-1' },
+    update: {},
+    create: {
+      name: 'Launch Offer — End of Lease',
+      description: 'Book your end of lease clean and get 15% off oven deep clean add-on. Bond back guaranteed.',
+      imageUrl: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=200&fit=crop',
+      linkUrl: '/booking?service=end-of-lease-cleaning',
+      startDate: new Date(),
+      budget: 500,
+      spent: 0,
+      impressions: 0,
+      clicks: 0,
+      isActive: true,
+      targetPages: '["home","booking"]'
+    }
+  });
+  console.log('✅ Ad Campaign: Launch Offer');
+
   console.log('🎉 Seed complete!');
 }
 

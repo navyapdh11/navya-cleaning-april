@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { SERVICES } from '@/lib/data';
+import { SERVICES, STATES } from '@/lib/data';
 
 // Helper: extract session token from Authorization header or cookie
 function getSessionToken(req: Request): string | null {
@@ -314,14 +314,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
   } catch (error) {
     console.error('[Prisma API Error]:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    // Fallback: return success with empty data for read actions, error for writes
+    const { action } = (await (request.clone().json().catch(() => ({})))) as { action?: string };
+    if (action?.startsWith('get_') || action === 'admin_login') {
+      return NextResponse.json({ [action.replace('get_', '')]: [] }, { status: 200 });
+    }
+    return NextResponse.json({ error: 'Database unavailable', success: false }, { status: 500 });
   }
 }
 
 export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const resource = url.searchParams.get('resource');
   try {
-    const url = new URL(request.url);
-    const resource = url.searchParams.get('resource');
 
     if (resource === 'bookings') {
       const bookings = await prisma.booking.findMany({
@@ -382,6 +387,25 @@ export async function GET(request: Request) {
     return NextResponse.json({ bookings: formatted });
   } catch (error) {
     console.error('[Prisma API Error]:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    // Fallback to lib/data.ts when DB is unavailable (e.g., Vercel serverless without persistent DB)
+    if (resource === 'services') {
+      return NextResponse.json({ services: SERVICES.map(s => ({ id: s.slug, slug: s.slug, name: s.name, description: s.description, basePrice: s.basePrice, category: s.category })) });
+    }
+    if (resource === 'testimonials') {
+      return NextResponse.json({ testimonials: [] });
+    }
+    if (resource === 'ads') {
+      return NextResponse.json({ campaigns: [] });
+    }
+    if (resource === 'flashcards') {
+      return NextResponse.json({ flashcards: [] });
+    }
+    if (resource === 'media') {
+      return NextResponse.json({ media: [] });
+    }
+    if (resource === 'page_content') {
+      return NextResponse.json({ contents: [] });
+    }
+    return NextResponse.json({ bookings: [] });
   }
 }
