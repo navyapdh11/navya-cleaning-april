@@ -2,7 +2,7 @@ services:
   - type: web
     name: march-cleaning
     env: node
-    plan: free
+    plan: starter
     buildCommand: cd cleaning-services-website && npm install && npm run build
     startCommand: cd cleaning-services-website && npm run start
     autoDeploy: true
@@ -11,3 +11,9 @@ services:
         value: "22"
       - key: NEXT_TELEMETRY_DISABLED
         value: "1"
+      - key: DB_PATH
+        value: /var/lib/data/mythos.db
+    disk:
+      name: mythos-db
+      mountPath: /var/lib/data
+      sizeGB: 1
