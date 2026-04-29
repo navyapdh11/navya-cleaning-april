@@ -7,18 +7,18 @@ import { CROEngine } from '@/lib/cro-engine';
 import { SERVICES } from '@/lib/data';
 import { Calculator, ArrowRight } from 'lucide-react';
 
+const calculateEstimate = (sqft: number, slug: string): number => {
+  const service = SERVICES.find(s => s.slug === slug);
+  const baseRate = service ? (service.basePrice / 1000) : 0.15;
+  return Math.round(sqft * baseRate);
+};
+
 export const DynamicQuoting: React.FC = () => {
   const router = useRouter();
   const [sqft, setSqft] = useState(1000);
   const [selectedService, setSelectedService] = useState(SERVICES[0].slug);
-  const [estimate, setEstimate] = useState(0);
 
-  useEffect(() => {
-    const service = SERVICES.find(s => s.slug === selectedService);
-    const baseRate = service ? (service.basePrice / 1000) : 0.15;
-    const total = sqft * baseRate;
-    setEstimate(Math.round(total));
-  }, [sqft, selectedService]);
+  const estimate = calculateEstimate(sqft, selectedService);
 
   const handleBookingStart = () => {
     CROEngine.getInstance().trackEngagement('booking_start', { sqft, selectedService, estimate });
