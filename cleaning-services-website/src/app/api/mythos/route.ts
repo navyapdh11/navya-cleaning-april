@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { action, payload } = body;
 
-    // ─── Booking / Scheduling ───
+    // ─── Booking / Scheduling (public) ───
     if (action === 'schedule') {
       const { facilityName, sqft, date, serviceSlug, stateCode, enterpriseClientId } = payload;
       const service = SERVICES.find(s => s.slug === serviceSlug) || SERVICES[0];
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ flashcards });
     }
 
-    if (action === 'save_flashcard') {
+    if (action === 'save_flashcard') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const { id, title, content, icon, category, isActive, order } = payload;
       const flashcard = await prisma.flashcard.upsert({
         where: { id: id || 'new' },
@@ -94,13 +94,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, flashcard });
     }
 
-    if (action === 'delete_flashcard') {
+    if (action === 'delete_flashcard') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       await prisma.flashcard.delete({ where: { id: payload.id } });
       return NextResponse.json({ success: true });
     }
 
     // ─── Site Config ───
-    if (action === 'update_config') {
+    if (action === 'update_config') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const { key, value } = payload;
       const jsonValue = typeof value === 'string' ? value : JSON.stringify(value);
       const config = await prisma.siteConfig.upsert({
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ services });
     }
 
-    if (action === 'update_service') {
+    if (action === 'update_service') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const { id, slug, name, description, basePrice, category } = payload;
       const service = await prisma.service.update({
         where: { id }, data: { name, description, basePrice, category }
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, service });
     }
 
-    if (action === 'create_service') {
+    if (action === 'create_service') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const service = await prisma.service.create({
         data: {
           slug: payload.slug, name: payload.name, description: payload.description || '',
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, service });
     }
 
-    if (action === 'delete_service') {
+    if (action === 'delete_service') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       await prisma.service.delete({ where: { id: payload.id } });
       return NextResponse.json({ success: true });
     }
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ contents });
     }
 
-    if (action === 'upsert_page_content') {
+    if (action === 'upsert_page_content') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const { page, section, key, value, locale = 'en' } = payload;
       const content = await prisma.pageContent.upsert({
         where: { page_section_key_locale: { page, section, key, locale } },
@@ -167,7 +167,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, content });
     }
 
-    if (action === 'delete_page_content') {
+    if (action === 'delete_page_content') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       await prisma.pageContent.delete({ where: { id: payload.id } });
       return NextResponse.json({ success: true });
     }
@@ -178,7 +178,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ media });
     }
 
-    if (action === 'add_media') {
+    if (action === 'add_media') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const media = await prisma.media.create({
         data: {
           url: payload.url, alt: payload.alt || '', type: payload.type || 'image',
@@ -188,7 +188,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, media });
     }
 
-    if (action === 'update_media') {
+    if (action === 'update_media') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const media = await prisma.media.update({
         where: { id: payload.id },
         data: { url: payload.url, alt: payload.alt, type: payload.type, page: payload.page }
@@ -196,7 +196,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, media });
     }
 
-    if (action === 'delete_media') {
+    if (action === 'delete_media') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       await prisma.media.delete({ where: { id: payload.id } });
       return NextResponse.json({ success: true });
     }
@@ -207,7 +207,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ campaigns });
     }
 
-    if (action === 'save_ad') {
+    if (action === 'save_ad') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const { id, name, description, imageUrl, linkUrl, startDate, endDate, budget, isActive, targetPages } = payload;
       const tp = typeof targetPages === 'string' ? targetPages : JSON.stringify(targetPages || []);
       const ad = await prisma.adCampaign.upsert({
@@ -218,7 +218,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, ad });
     }
 
-    if (action === 'delete_ad') {
+    if (action === 'delete_ad') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       await prisma.adCampaign.delete({ where: { id: payload.id } });
       return NextResponse.json({ success: true });
     }
@@ -229,7 +229,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ configs: Object.fromEntries(configs.map(c => [c.key, { value: c.value, isActive: c.isActive }])) });
     }
 
-    if (action === 'update_analytics_config') {
+    if (action === 'update_analytics_config') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const { key, value, isActive } = payload;
       const config = await prisma.analyticsConfig.upsert({
         where: { key },
@@ -245,7 +245,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ testimonials });
     }
 
-    if (action === 'save_testimonial') {
+    if (action === 'save_testimonial') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const { id, name, role, company, rating, content, imageUrl, isFeatured, isActive, order } = payload;
       const testimonial = await prisma.testimonial.upsert({
         where: { id: id || 'new' },
@@ -255,7 +255,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, testimonial });
     }
 
-    if (action === 'delete_testimonial') {
+    if (action === 'delete_testimonial') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       await prisma.testimonial.delete({ where: { id: payload.id } });
       return NextResponse.json({ success: true });
     }
@@ -266,7 +266,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ users: users.map(u => ({ ...u, passwordHash: undefined })) });
     }
 
-    if (action === 'save_user') {
+    if (action === 'save_user') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       const { id, email, name, passwordHash, role, isActive } = payload;
       const data: any = { email, name, role, isActive };
       if (passwordHash) data.passwordHash = passwordHash;
@@ -278,7 +278,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, user: { ...user, passwordHash: undefined } });
     }
 
-    if (action === 'delete_user') {
+    if (action === 'delete_user') { const admin = await checkAdmin(request); if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       await prisma.adminUser.delete({ where: { id: payload.id } });
       return NextResponse.json({ success: true });
     }
