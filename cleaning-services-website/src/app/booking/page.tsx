@@ -1,9 +1,17 @@
 'use client';
 
 import React, { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import { MultiStepBooking } from '@/components/booking/MultiStepBooking';
-import { ThreeDModel } from '@/components/ThreeDModel';
+
+const MultiStepBooking = dynamic(
+  () => import('@/components/booking/MultiStepBooking').then(m => ({ default: m.MultiStepBooking })),
+  { ssr: false, loading: () => <div className="p-8 text-center">Loading booking system...</div> }
+);
+const ThreeDModel = dynamic(
+  () => import('@/components/ThreeDModel').then(m => ({ default: m.ThreeDModel })),
+  { ssr: false, loading: () => null }
+);
 
 function BookingContent() {
   const searchParams = useSearchParams();
