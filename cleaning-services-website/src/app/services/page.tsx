@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { SERVICES } from '@/lib/data';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -8,11 +9,16 @@ async function getServices() {
     const res = await fetch(`${API_URL}/api/mythos?resource=services`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return [];
+    if (!res.ok) return SERVICES.map(s => ({ id: s.slug, slug: s.slug, name: s.name, description: s.description, basePrice: s.basePrice, category: s.category }));
     const data = await res.json();
-    return data.services || [];
+    const apiServices = data.services || [];
+    // Fallback to static SERVICES if API returns empty
+    if (apiServices.length === 0) {
+      return SERVICES.map(s => ({ id: s.slug, slug: s.slug, name: s.name, description: s.description, basePrice: s.basePrice, category: s.category }));
+    }
+    return apiServices;
   } catch {
-    return [];
+    return SERVICES.map(s => ({ id: s.slug, slug: s.slug, name: s.name, description: s.description, basePrice: s.basePrice, category: s.category }));
   }
 }
 

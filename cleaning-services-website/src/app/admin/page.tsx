@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import {
   LayoutDashboard, DollarSign, FileText, Image as ImageIcon, Megaphone, BarChart3,
   Sparkles, ShoppingCart, Users, Settings, Lock, LogOut, Plus, Save,
@@ -416,7 +417,9 @@ export default function AdminDashboard() {
 
         {formData.url && !editingItem && (
           <div style={{ ...glass(), marginBottom: '1rem' }}>
-            <img src={formData.url} alt={formData.alt} style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 12, marginBottom: '1rem' }} />
+            <div className="relative" style={{ width: '100%', maxWidth: 400, height: 200, borderRadius: 12, overflow: 'hidden', marginBottom: '1rem' }}>
+              <Image src={formData.url} alt={formData.alt} fill className="object-cover" />
+            </div>
             <button onClick={handleSave} style={btnStyle()}><Save size={14} /> Save to Library</button>
           </div>
         )}
@@ -425,7 +428,9 @@ export default function AdminDashboard() {
           {media.length === 0 && <div style={{ ...glass(), textAlign: 'center', opacity: 0.3, padding: '3rem', gridColumn: '1 / -1' }}>No media yet. Upload images above.</div>}
           {media.map(m => (
             <div key={m.id} style={{ ...glass(), padding: '0.8rem' }}>
-              <img src={m.url} alt={m.alt} style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 10, marginBottom: '0.5rem' }} />
+              <div className="relative" style={{ width: '100%', height: 140, borderRadius: 10, overflow: 'hidden', marginBottom: '0.5rem' }}>
+                <Image src={m.url} alt={m.alt} fill className="object-cover" />
+              </div>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.alt || 'Untitled'}</div>
               <div style={{ fontSize: '0.65rem', opacity: 0.4 }}>{m.type} • {m.page || 'Global'}</div>
               <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.5rem' }}>
@@ -482,7 +487,11 @@ export default function AdminDashboard() {
           {ads.length === 0 && <div style={{ ...glass(), textAlign: 'center', opacity: 0.3, padding: '3rem' }}>No campaigns yet.</div>}
           {ads.map(a => (
             <div key={a.id} style={{ ...glass(), display: 'flex', gap: '1.5rem', alignItems: 'center', padding: '1.2rem 1.5rem' }}>
-              {a.imageUrl && <img src={a.imageUrl} alt={a.name} style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 10 }} />}
+              {a.imageUrl && (
+                <div className="relative" style={{ width: 80, height: 60, borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
+                  <Image src={a.imageUrl} alt={a.name} fill className="object-cover" />
+                </div>
+              )}
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700 }}>{a.name}</div>
                 <div style={{ opacity: 0.5, fontSize: '0.8rem', marginTop: '0.2rem' }}>{a.description.substring(0, 80)}...</div>
@@ -689,7 +698,11 @@ export default function AdminDashboard() {
           {testimonials.length === 0 && <div style={{ ...glass(), textAlign: 'center', opacity: 0.3, padding: '3rem' }}>No testimonials yet.</div>}
           {testimonials.map(t => (
             <div key={t.id} style={{ ...glass(), display: 'flex', gap: '1.5rem', alignItems: 'center', padding: '1.2rem 1.5rem' }}>
-              {t.imageUrl && <img src={t.imageUrl} alt={t.name} style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }} />}
+              {t.imageUrl && (
+                <div className="relative" style={{ width: 50, height: 50, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+                  <Image src={t.imageUrl} alt={t.name} fill className="object-cover" />
+                </div>
+              )}
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700 }}>{t.name} {t.company && <span style={{ opacity: 0.5, fontWeight: 400 }}>— {t.company}</span>}</div>
                 <div style={{ color: '#ffd93d', fontSize: '0.85rem' }}>{'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}</div>

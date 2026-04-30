@@ -4,19 +4,23 @@ import Link from 'next/link';
 import { BentoGrid, BentoItem } from '@/components/InteractiveElements';
 import { Shield, Zap, Target, BarChart3 } from 'lucide-react';
 import { EndOfLeaseCalculator } from '@/components/EndOfLeaseCalculator';
+import { SERVICES } from '@/lib/data';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
+function staticServices() {
+  return SERVICES.map(s => ({ id: s.slug, slug: s.slug, name: s.name, description: s.description, basePrice: s.basePrice, category: s.category }));
+}
+
 async function getServices() {
   try {
-    const res = await fetch(`${API_URL}/api/mythos?resource=services`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return [];
+    const res = await fetch(`${API_URL}/api/mythos?resource=services`, { next: { revalidate: 60 } });
+    if (!res.ok) return staticServices();
     const data = await res.json();
-    return data.services || [];
+    const apiServices = data.services || [];
+    return apiServices.length === 0 ? staticServices() : apiServices;
   } catch {
-    return [];
+    return staticServices();
   }
 }
 
