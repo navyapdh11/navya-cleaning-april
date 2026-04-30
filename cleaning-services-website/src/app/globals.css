@@ -1490,3 +1490,13 @@ button {
   }
 }
 
+.location-card:hover {
+  border-color: rgba(0,212,255,0.4) !important;
+  transform: translateY(-4px);
+}
+
+.service-card:hover {
+  border-color: rgba(0,212,255,0.4) !important;
+  transform: translateY(-2px);
+}
+
