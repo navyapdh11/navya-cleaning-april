@@ -8,40 +8,73 @@ This project operates at **2026 AI-Native Enterprise Grade** standards.
 
 ## 1. Architecture & Tech Stack (2026)
 
-- **Framework:** Next.js 16.2.2 (Turbopack, default).
-- **Runtime:** React 19+, TypeScript 5.1+.
-- **Database:** Prisma ORM — PostgreSQL (production), SQLite (dev).
-- **Video:** Remotion for programmatic video creation and animation.
-- **Styling:** Tailwind CSS 4 (Oxide engine).
-- **Security:** OWASP 2025/2026 standards, SBOM, secret scanning.
-- **Build/Lint:** Biome (JS/TS), Ruff (Python), tsc (strict mode).
+- **Framework:** Next.js 14.2.35 (App Router) — all 17 CVEs from 14.2.3 patched.
+- **Runtime:** React 18.3.1, TypeScript 5.
+- **Database:** Prisma ORM v5.22 — SQLite (dev) / PostgreSQL (production), 14 models.
+- **Auth:** bcryptjs + SHA256 session tokens, HttpOnly SameSite=Strict cookies.
+- **Styling:** Tailwind CSS v4 (Oxide engine), Framer Motion.
+- **3D:** Three.js + @react-three/fiber + @react-three/drei (dynamic import, ssr: false).
+- **Icons:** lucide-react.
+- **Build/Lint:** ESLint + eslint-config-next 14.2.35, tsc (strict mode).
+- **Deployment:** Vercel.
+
+### API Routes
+| Route | Methods | Auth | Purpose |
+|-------|---------|------|---------|
+| `/api/mythos` | POST/GET | Mixed (legacy) | 30+ action handlers, checkAdmin() wired to 18 write actions |
+| `/api/admin` | GET/POST/PATCH/DELETE | ✅ Session | Dedicated admin CRUD for 10 resources |
+| `/api/admin/login` | POST | N/A | bcrypt auth + session cookie |
+| `/api/customer` | GET/POST | Public | Customer bookings + dispatch submission |
+
+### Dashboards
+- **Admin (`/admin`):** 911 lines, 11 tabs, full CRUD for all Prisma models
+- **Customer (`/dashboard`):** 219 lines, 5 tabs (overview, dispatches, vault, billing, settings)
+- **Access:** Homepage cards + Navbar dropdown + Footer links — all routes visible
+
+### Security Status
+| Check | Status |
+|-------|--------|
+| bcrypt password hashing | ✅ Implemented |
+| SHA256 session tokens | ✅ Implemented |
+| HttpOnly cookies | ✅ Implemented |
+| checkAdmin() on write actions | ✅ 18 actions protected |
+| Next.js CVEs | ✅ All 17 patched (14.2.3 → 14.2.35) |
+| Security headers | ⚠️ Not yet implemented |
+| Customer dashboard auth | ⚠️ Not yet implemented |
+
+### Performance
+| Metric | Value |
+|--------|-------|
+| Booking bundle | 2.09 kB (was 230 kB, 99% reduction via dynamic import) |
+| Shared JS bundle | 87.5 kB |
+| Static pages | 36 total, all generated |
+| 3D components | Dynamic import with ssr: false |
 
 ## 2. 2026 Engineering Patterns
 
-### Next.js 16 Patterns
-- **Caching:** Use `"use cache"` directive.
-- **Async Routes:** Await all route params: `const params = await props.params`.
-- **`proxy.ts`:** Migrate auth middleware here.
-- **Compiler:** `reactCompiler: true` enabled.
+### Next.js 14 → 16 Upgrade Path
+- **Current:** 14.2.35 with implicit App Router caching
+- **Target:** Next.js 16.2.2 with Turbopack, explicit `"use cache"`, `proxy.ts`
+- **Migration:** Update next → 16.x, react → 19.x, migrate middleware.ts → proxy.ts, enable reactCompiler, add `"use cache"` directives
 
 ### Agentic & Creative Patterns
-- **Multica:** Use for multi-agent architectural orchestration and complex task decomposition.
+- **Multica:** Use for multi-agent architectural orchestration.
 - **Remotion:** Use for programmatic video marketing automation.
 
 ### Security Priorities
-- **Auth Hardening:** Secure `/admin` and `/dashboard` routes.
-- **Security Headers:** HSTS, CSP, X-Frame-Options, X-Content-Type-Options.
-- **SEO:** Structured data (JSON-LD), dynamic `sitemap.ts`.
+- **Auth Hardening:** Secure `/admin` (done) and `/dashboard` (pending).
+- **Security Headers:** HSTS, CSP, X-Frame-Options, X-Content-Type-Options (pending).
+- **SEO:** Structured data (JSON-LD), dynamic `sitemap.ts`, robots.txt.
 - **Interactivity:** Minimize `"use client"` — favor Server Components.
 
 ---
 
 ## 3. Tooling Standards (2026)
 
-- **Formatting/Linting:** Biome. 10–100× faster. Flat config format.
-- **Python:** Ruff. Unified formatter + linter.
 - **TypeScript:** `tsc --noEmit` strict mode.
+- **Build:** `next build` — zero errors, zero warnings.
 - **Testing:** Vitest (unit), Playwright (E2E). 80%+ coverage for business logic.
+- **Prisma:** `npx prisma generate` after schema changes. `npx prisma studio` for inspection.
 
 ---
 
@@ -49,10 +82,12 @@ This project operates at **2026 AI-Native Enterprise Grade** standards.
 
 | Date | Superseded | Replaced By | Reason |
 |------|-----------|-------------|--------|
-| 2026-04 | Next.js 14 caching | Next.js 16 `"use cache"` | Opt-in, predictable invalidation |
-| 2026-04 | `middleware.ts` | `proxy.ts` | Clear Node.js runtime boundary |
-| 2026-04 | Prettier + ESLint | Biome | Unified, 10–100× faster tool |
-| 2026-04 | Manual `useMemo`/`useCallback` | React Compiler auto-memoization | Zero manual code changes |
+| 2026-04 | Next.js 14.2.3 (17 CVEs) | Next.js 14.2.35 | Security patches |
+| 2026-04 | Plaintext passwords | bcrypt + SHA256 session tokens | Security hardening |
+| 2026-04 | Dead checkAdmin() | Wired to 18 write actions | API write protection |
+| 2026-04 | Booking bundle 230 kB | Dynamic import, 2.09 kB | 99% bundle reduction |
+| 2026-04 | Empty pricing page | Full static content + FAQ | 8 services, trust guarantees |
+| 2026-04 | Hidden dashboards | Navbar + Footer + Homepage access | Full visibility |
 
 ---
 
