@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { SERVICES, STATES } from '@/lib/data';
+import bcrypt from 'bcryptjs';
+import { createHash, randomBytes } from 'node:crypto';
 
 // Helper: extract session token from Authorization header or cookie
 function getSessionToken(req: Request): string | null {
@@ -11,16 +13,16 @@ function getSessionToken(req: Request): string | null {
   return match?.[1] || null;
 }
 
-// Simple auth check (in production, use JWT + bcrypt)
+// Auth check: verify session token against admin user
 async function checkAdmin(req: Request) {
   const token = getSessionToken(req);
   if (!token) return null;
   try {
-    const user = await prisma.adminUser.findFirst({
-      where: { isActive: true },
-    });
-    // Token is compared against stored hash (simplified for demo)
-    if (user && user.passwordHash === token) return user;
+    const user = await prisma.adminUser.findFirst({ where: { isActive: true } });
+    if (!user) return null;
+    // Token is SHA256(session_key), compare against stored sessionKey
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    if (user.passwordHash === tokenHash) return user;
     return null;
   } catch { return null; }
 }
@@ -285,8 +287,16 @@ export async function POST(request: Request) {
     if (action === 'admin_login') {
       const { email, password } = payload;
       const user = await prisma.adminUser.findFirst({ where: { email, isActive: true } });
-      if (user && user.passwordHash === password) {
-        return NextResponse.json({ success: true, user: { id: user.id, email: user.email, name: user.name, role: user.role }, token: user.passwordHash });
+      if (user && await bcrypt.compare(password, user.passwordHash)) {
+        const sessionToken = randomBytes(32).toString('hex');
+        const sessionHash = createHash('sha256').update(sessionToken).digest('hex');
+        // Store session hash in passwordHash field (repurposed for session storage)
+        await prisma.adminUser.update({ where: { id: user.id }, data: { passwordHash: sessionHash } });
+        return NextResponse.json({
+          success: true,
+          user: { id: user.id, email: user.email, name: user.name, role: user.role },
+          token: sessionToken
+        });
       }
       return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
     }

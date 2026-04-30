@@ -31,10 +31,28 @@ export const metadata: Metadata = {
   },
   description: "2026 Enterprise-grade hygiene powered by autonomous systems, self-learning optimization, and AEO-ready compliance data.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://navya-cleaning-april.onrender.com"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_AU",
     siteName: "NAVYA MYTHOS",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://navya-cleaning-april.onrender.com",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NAVYA MYTHOS — Enterprise Sanitization",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NAVYA MYTHOS | Enterprise Sanitization",
+    description: "2026 Enterprise-grade hygiene powered by autonomous systems, self-learning optimization, and AEO-ready compliance data.",
+    images: ["/og-image.png"],
   },
 };
 
@@ -64,6 +82,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
       <body>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none">
+          Skip to main content
+        </a>
         <GoogleTagManager gtmId={gtmId} />
         <LocationBanner />
         <Navbar />

@@ -18,27 +18,115 @@ function BookingContent() {
 
 export default function BookingPage() {
   return (
-    <main style={{ minHeight: '100vh', padding: '6rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div className="bg-mesh"></div>
-      
-      <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-         <div style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '1rem' }}>NATIONAL DISPATCH NODE 01</div>
-         <h1 style={{ fontSize: '5rem', fontWeight: '900', letterSpacing: '-3px', lineHeight: 1 }}>
-           Enterprise <span style={{ color: 'var(--primary)' }}>Booking</span>
-         </h1>
-         <p style={{ opacity: 0.6, fontSize: '1.2rem', marginTop: '1.5rem', maxWidth: '600px', margin: '1.5rem auto 0' }}>
-           Initialize your autonomous sanitization fleet across the National NAVYA MYTHOS Grid.
-         </p>
+    <main
+      className="booking-page"
+      style={{
+        minHeight: '100vh',
+        paddingTop: '7rem',
+        paddingBottom: '4rem',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Ambient gradient background */}
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: -2,
+          background:
+            'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,212,255,0.06) 0%, transparent 100%)',
+        }}
+      />
+
+      {/* Subtle 3D decoration */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '-15%',
+          right: '-10%',
+          width: '500px',
+          height: '500px',
+          opacity: 0.06,
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+      >
+        <ThreeDModel />
       </div>
 
-      <Suspense fallback={<div className="glass p-20 rounded-[48px] text-center">Synchronizing with National Hub...</div>}>
+      {/* Page header */}
+      <header
+        style={{
+          textAlign: 'center',
+          maxWidth: '700px',
+          margin: '0 auto 3rem',
+          padding: '0 1.5rem',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.15em',
+            color: 'var(--primary)',
+            marginBottom: '1rem',
+          }}
+        >
+          Book in 5 Easy Steps
+        </div>
+        <h1
+          style={{
+            fontSize: 'clamp(2rem, 5vw, 3.2rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.1,
+            margin: '0 0 1rem',
+          }}
+        >
+          Book Your{' '}
+          <span
+            style={{
+              background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            Clean
+          </span>
+        </h1>
+        <p
+          style={{
+            opacity: 0.55,
+            fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
+            lineHeight: 1.6,
+            margin: 0,
+          }}
+        >
+          Get an instant quote, customise your clean, and book in minutes. 
+          Prices update live as you build your service.
+        </p>
+      </header>
+
+      <Suspense
+        fallback={
+          <div
+            className="glass"
+            style={{
+              padding: '4rem 2rem',
+              borderRadius: '24px',
+              textAlign: 'center',
+              maxWidth: '600px',
+              margin: '0 auto',
+            }}
+          >
+            Loading booking system...
+          </div>
+        }
+      >
         <BookingContent />
       </Suspense>
-
-      {/* Background 3D subtle effect */}
-      <div style={{ position: 'fixed', bottom: '-10%', right: '-10%', width: '600px', height: '600px', opacity: 0.1, pointerEvents: 'none', zIndex: -1 }}>
-         <ThreeDModel />
-      </div>
     </main>
   );
 }

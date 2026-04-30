@@ -52,7 +52,7 @@ const btnStyle = (variant: 'primary' | 'danger' | 'ghost' = 'primary'): React.CS
 // ─── Login Screen ────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin }: { onLogin: (user: any, token: string) => void }) {
   const [email, setEmail] = useState('admin@navya.com');
-  const [password, setPassword] = useState('admin123');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -71,7 +71,7 @@ function LoginScreen({ onLogin }: { onLogin: (user: any, token: string) => void 
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...inputStyle, marginBottom: '1rem' }} />
         <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" style={{ ...inputStyle, marginBottom: '1.5rem' }} onKeyDown={e => e.key === 'Enter' && handleLogin(e)} />
         <button type="submit" style={{ ...btnStyle(), width: '100%', justifyContent: 'center', padding: '1rem' }}>Sign In</button>
-        <p style={{ marginTop: '1rem', fontSize: '0.75rem', opacity: 0.3 }}>Default: admin@navya.com / admin123</p>
+        <p style={{ marginTop: '1rem', fontSize: '0.75rem', opacity: 0.3 }}>Secure admin login required</p>
       </form>
     </div>
   );
