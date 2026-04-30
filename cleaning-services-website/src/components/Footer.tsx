@@ -18,6 +18,11 @@ const navLinks = [
   { name: 'Booking', path: '/booking' },
 ];
 
+const dashboardLinks = [
+  { name: 'Admin Control', path: '/admin' },
+  { name: 'Customer Portal', path: '/dashboard' },
+];
+
 export const Footer: React.FC = () => {
   const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -113,6 +118,16 @@ export const Footer: React.FC = () => {
             </Link>
           ))}
           <Link href="/locations">Locations</Link>
+        </nav>
+
+        {/* Dashboard Links */}
+        <nav className="footer-nav" aria-label="Dashboard navigation" style={{ marginTop: 'var(--space-6)' }}>
+          <span style={{ color: 'var(--foreground-muted)', fontSize: 'var(--text-sm)', marginRight: 'var(--space-4)' }}>Dashboards:</span>
+          {dashboardLinks.map((link) => (
+            <Link key={link.path} href={link.path} style={{ color: 'var(--primary)' }}>
+              {link.name}
+            </Link>
+          ))}
         </nav>
 
         {/* Copyright */}

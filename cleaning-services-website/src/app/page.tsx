@@ -8,7 +8,7 @@ import { BentoGrid, BentoItem, FlashCard } from "@/components/InteractiveElement
 import { DynamicQuoting } from "@/components/DynamicQuoting";
 import { CROEngine } from "@/lib/cro-engine";
 import { SERVICES, STATES } from "@/lib/data";
-import { Shield, Zap, Globe, Users, Building2, Briefcase, ArrowRight, Star } from 'lucide-react';
+import { Shield, Zap, Globe, Users, Building2, Briefcase, ArrowRight, Star, Sparkles } from 'lucide-react';
 
 // ─── Types ───
 
@@ -449,6 +449,43 @@ export default function Home() {
         </section>
       )}
 
+      {/* Dashboard Access Section */}
+      <section style={{ padding: '4rem 2rem 6rem', maxWidth: '1000px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '1rem' }}>
+            Access Your <span style={{ color: 'var(--primary)' }}>Dashboard</span>
+          </h2>
+          <p style={{ fontSize: '1.1rem', opacity: 0.7, maxWidth: '600px', margin: '0 auto' }}>
+            Manage your cleaning operations, track dispatches, and monitor compliance — all in one place.
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+          <Link href="/admin" className="glass" style={{ padding: '2.5rem', borderRadius: '24px', textAlign: 'center', textDecoration: 'none', color: 'inherit', display: 'block', transition: 'transform 0.2s' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--secondary), transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <Shield size={28} color="var(--secondary)" />
+            </div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.75rem' }}>Admin Control</h3>
+            <p style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '1.5rem' }}>
+              Manage services, bookings, flashcards, media, ads, testimonials, and team access.
+            </p>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--secondary)', fontWeight: '600' }}>
+              Open Admin Panel <ArrowRight size={16} />
+            </span>
+          </Link>
+          <Link href="/dashboard" className="glass" style={{ padding: '2.5rem', borderRadius: '24px', textAlign: 'center', textDecoration: 'none', color: 'inherit', display: 'block', transition: 'transform 0.2s' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--primary), transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <Sparkles size={28} color="var(--primary)" />
+            </div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.75rem' }}>Customer Portal</h3>
+            <p style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '1.5rem' }}>
+              View active dispatches, compliance certificates, billing history, and property nodes.
+            </p>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: '600' }}>
+              Open Customer Portal <ArrowRight size={16} />
+            </span>
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

@@ -172,6 +172,40 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
 
+          {/* Dashboards Dropdown */}
+          <div className="nav-dropdown" ref={dropdownRef}>
+            <button
+              className={`nav-link nav-dropdown-trigger ${activeDropdown === 'dashboards' ? 'nav-link-active' : ''}`}
+              onClick={() => setActiveDropdown(activeDropdown === 'dashboards' ? null : 'dashboards')}
+              aria-expanded={activeDropdown === 'dashboards'}
+              aria-haspopup="true"
+            >
+              Dashboards
+              <ChevronDown size={14} strokeWidth={2.5} className={`nav-chevron ${activeDropdown === 'dashboards' ? 'nav-chevron-open' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {activeDropdown === 'dashboards' && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="nav-dropdown-menu"
+                  role="menu"
+                >
+                  <Link href="/admin" className="nav-dropdown-item" role="menuitem">
+                    <Shield size={14} strokeWidth={2} />
+                    Admin Control
+                  </Link>
+                  <Link href="/dashboard" className="nav-dropdown-item" role="menuitem">
+                    <Sparkles size={14} strokeWidth={2} />
+                    Customer Portal
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {/* CTA & Mobile Toggle */}
           <div className="navbar-actions">
             <Link href="/booking" className="navbar-cta">
@@ -226,6 +260,17 @@ export const Navbar: React.FC = () => {
                       {state.code}
                     </Link>
                   ))}
+                </div>
+              </div>
+              <div className="mobile-dropdown-section">
+                <span className="mobile-dropdown-label">Dashboards</span>
+                <div className="mobile-dropdown-grid">
+                  <Link href="/admin" className="mobile-location-chip" onClick={() => setIsMobileMenuOpen(false)}>
+                    Admin
+                  </Link>
+                  <Link href="/dashboard" className="mobile-location-chip" onClick={() => setIsMobileMenuOpen(false)}>
+                    Customer
+                  </Link>
                 </div>
               </div>
               <Link

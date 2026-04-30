@@ -21,7 +21,7 @@ export default function CustomerDashboard() {
   const [bookings, setBookings] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/mythos')
+    fetch('/api/customer')
       .then(res => res.json())
       .then(data => {
         if (data.bookings) setBookings(data.bookings);
