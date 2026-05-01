@@ -1,0 +1,37 @@
+# Dependabot configuration for NAVYA MYTHOS monorepo
+# Only scans the deployed cleaning-services-website package.
+# Root pnpm-lock.yaml and sub-package (server/, cli/, ui/) lockfiles
+# are excluded — they are not part of any deployed artifact.
+
+version: 2
+
+updates:
+  # Only scan the deployed Vercel frontend
+  - package-ecosystem: "npm"
+    directory: "/cleaning-services-website"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    versioning-strategy: increase
+    # Ignore transitive dependencies that are pinned by Next.js
+    ignore:
+      - dependency-name: "postcss"
+        # Next.js pins its own postcss version; upgrade via Next.js upgrade
+      - dependency-name: "eslint-config-next"
+        # Must match Next.js major version
+    # Group minor/patch updates to reduce PR noise
+    groups:
+      dev-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions security updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5

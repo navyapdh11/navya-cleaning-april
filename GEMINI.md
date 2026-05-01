@@ -57,9 +57,24 @@ This project operates at **2026 AI-Native Enterprise Grade** standards.
 - **Target:** Next.js 16.2.2 with Turbopack, explicit `"use cache"`, `proxy.ts`
 - **Migration:** Update next → 16.x, react → 19.x, migrate middleware.ts → proxy.ts, enable reactCompiler, add `"use cache"` directives
 
-### Agentic & Creative Patterns
-- **Multica:** Use for multi-agent architectural orchestration.
-- **Remotion:** Use for programmatic video marketing automation.
+### AI, UX/UI, SEO & Agentic Standards (2026)
+- **UX/UI:** WCAG 2.2 (ISO 40500:2025) compliance. Core Web Vitals: LCP < 2.5s, INP < 200ms, CLS < 0.1. Human-crafted aesthetics — anti-AI-fatigue design. Ensure admin bento grid text remains readable. Semantic HTML, skip links, `prefers-reduced-motion`, keyboard navigation.
+- **SEO:** E-E-A-T, JSON-LD structured data (`LocalBusiness`, `Service`, `FAQPage`, `Article`), XML sitemap, canonical URLs, mobile-first indexing, unique metadata per page.
+- **AEO:** Featured snippet optimization (40-60 word opening definitions), FAQ schema with standalone answers, voice search targeting ("best cleaning near me", bond cleaning cost queries).
+- **GEO:** Factual authority, provenance chains, H1→H2→H3 hierarchy, bulleted lists, comparison tables (pricing), AI crawler access (`GPTBot`, `ClaudeBot`, `PerplexityBot`), human editorial oversight.
+- **AI Integration:** Server-side LLM calls, streaming responses, graceful fallbacks, AI-assisted content with human review, SMLM (Flash Attention 3, RoPE, Muon).
+
+### DeepSeek V4 Optimizer
+- **Architecture:** 671B total parameters, 37B activated per token via DeepSeekMoE (256 experts). Multi-head Latent Attention (MLA) for efficient context modeling.
+- **FP8 Mixed Precision:** Native FP8 weights with BF16 fallback. W8A8 quantization for inference acceleration.
+- **Multi-Token Prediction (MTP):** Enables speculative decoding for 2-3× faster inference. Improves training signal density.
+- **Auxiliary-Loss-Free Load Balancing:** MoE expert routing without auxiliary loss penalties.
+- **Integration:** Use `deepseek-v4-flash` for rapid inference (booking summarization, customer query extraction). Use `deepseek-v4-pro` for complex reasoning (pricing optimization, compliance analysis). Enable `thinking` mode for multi-step tasks. Stream responses (`stream: true`).
+- **Context Management:** Sliding window + summary compression. Truncate history while preserving semantic continuity.
+- **Safety:** Validate all LLM outputs before downstream execution. Request confidence markers for critical decisions.
+
+### Agentic Integration
+- Multi-agent orchestration (Coordinator → Specialists → Verifier), least-privilege execution, API-first design, structured JSON outputs, dual-interface (human + agent).
 
 ### Security Priorities
 - **Auth Hardening:** Secure `/admin` (done) and `/dashboard` (pending).
@@ -88,6 +103,9 @@ This project operates at **2026 AI-Native Enterprise Grade** standards.
 | 2026-04 | Booking bundle 230 kB | Dynamic import, 2.09 kB | 99% bundle reduction |
 | 2026-04 | Empty pricing page | Full static content + FAQ | 8 services, trust guarantees |
 | 2026-04 | Hidden dashboards | Navbar + Footer + Homepage access | Full visibility |
+| 2026-04 | Implicit UX guidelines | WCAG 2.2, Core Web Vitals, human-crafted aesthetics | WCAG 2.2 (ISO 40500:2025), INP < 200ms |
+| 2026-04 | Basic SEO | E-E-A-T, AEO, GEO | AI-overview optimization, provenance chains |
+| 2026-04 | No AI/agentic standards | Server-side AI, multi-agent orchestration | Safe LLM integration, hierarchical agents |
 
 ---
 
