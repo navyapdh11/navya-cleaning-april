@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "biome check --write .",
+    "lint:check": "biome check .",
+    "typecheck": "tsc --noEmit",
     "seed": "ts-node --esm prisma/seed.ts"
   },
   "prisma": {
@@ -30,6 +32,7 @@
     "three": "^0.170.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.13",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/postcss": "^4.2.4",
